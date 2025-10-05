@@ -1,5 +1,5 @@
 version: v1
-name: buf.build/init/ha30-proto
+name: buf.build/init/ha3-proto
 
 lint:
   use:

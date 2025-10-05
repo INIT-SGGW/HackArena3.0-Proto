@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package race.v1;
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+message SubscribeCarStateRequest {
+  string car_id = 1;
+  uint32 hz = 2;
+}
+
+message GetCarStateRequest { string car_id = 1; }
+
+message CarState {
+  string car_id = 1;
+  float x = 2;
+  float z = 3;
+  float heading = 4;
+  float speed = 5;
+}
+
+service TelemetryService {
+  rpc SubscribeCarState(SubscribeCarStateRequest) returns (stream CarState);
+
+  rpc GetCarState(GetCarStateRequest) returns (CarState);
+}
