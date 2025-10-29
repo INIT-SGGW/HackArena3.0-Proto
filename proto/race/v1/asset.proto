@@ -1,0 +1,41 @@
+syntax = "proto3";
+package race.v1;
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+enum MimeType {
+    MIME_UNSPECIFIED = 0;
+    MIME_GLTF_BINARY = 1;
+}
+
+message TrackMeta {
+    string id = 1;
+    MimeType content_type = 2;
+    uint64 size_bytes = 3;
+    bytes content_hash = 4;
+    uint32 version = 5;
+}
+
+message GetTrackMetaRequest {
+    string id = 1;
+}
+message GetTrackMetaResponse {
+    TrackMeta meta = 1;
+}
+
+message GetTrackRequest {
+    string id = 1;
+    uint64 offset = 2;
+    uint64 limit = 3;
+    bytes if_match_hash = 4;
+}
+message GetTrackResponse {
+    uint64 offset = 1;
+    bytes data = 2;
+    bool eof = 3;
+}
+
+service AssetService {
+    rpc GetTrackMeta(GetTrackMetaRequest) returns (GetTrackMetaResponse);
+    rpc GetTrack(GetTrackRequest) returns (stream GetTrackResponse);
+}
