@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Wymagane do publikacji paczek
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
