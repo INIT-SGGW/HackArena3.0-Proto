@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  # Oficjalny generator Protobuf dla C# (hostowany zdalnie)
+  - plugin: buf.build/protocolbuffers/csharp
+    out: gen/csharp
+  # Oficjalny generator gRPC dla C# (hostowany zdalnie)
+  - plugin: buf.build/grpc/csharp
+    out: gen/csharp

@@ -1,0 +1,36 @@
+name: Release Proto Packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  # Krok wstępny: Lintowanie (Quality Gate)
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-setup-action@v1
+      - uses: bufbuild/buf-lint-action@v1
+        with:
+          input: 'proto'
+
+  # Budowanie i publikacja C#
+  build-csharp:
+    needs: lint
+    uses: ./.github/workflows/build-csharp.yaml
+    with:
+      # Przekazujemy wersję taga (np. v1.0.1)
+      version: ${{ github.event.release.tag_name }}
+    secrets: inherit # Ważne: przekazuje GITHUB_TOKEN do sub-workflow
+
+  # Budowanie i publikacja TypeScript
+  build-typescript:
+    needs: lint
+    uses: ./.github/workflows/build-typescript.yaml
+    with:
+      version: ${{ github.event.release.tag_name }}
+    secrets: inherit
+
+  # Miejsce na kolejne języki (Rust, Python) w przyszłości...
+  # build-rust: ...

@@ -1,0 +1,56 @@
+name: Build TypeScript
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Install Protoc Plugin
+        run: npm install -g @bufbuild/protoc-gen-es
+
+      - name: Clean Version
+        id: ver
+        run: |
+          VERSION_CLEAN=${{ inputs.version }}
+          echo "clean=${VERSION_CLEAN#v}" >> $GITHUB_OUTPUT
+
+      - name: Generate TypeScript Code
+        run: |
+          buf generate --template buf.gen.typescript.yaml
+
+      - name: Prepare package.json
+        run: |
+          cp templates/package.json.tmpl gen/ts/package.json
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          sed -i "s/VERSION_PLACEHOLDER/${{ steps.ver.outputs.clean }}/g" gen/ts/package.json
+          sed -i "s/OWNER_PLACEHOLDER/$OWNER_LOWER/g" gen/ts/package.json
+
+      - name: Install Dependencies and Publish
+        working-directory: gen/ts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm install
+          npm publish --access restricted
