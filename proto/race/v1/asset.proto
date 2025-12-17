@@ -4,8 +4,8 @@ package race.v1;
 option csharp_namespace = "HA3.Proto.Race.V1";
 
 enum MimeType {
-    MIME_UNSPECIFIED = 0;
-    MIME_GLTF_BINARY = 1;
+    MIME_TYPE_UNSPECIFIED = 0;
+    MIME_TYPE_GLTF_BINARY = 1;
 }
 
 message TrackMeta {
