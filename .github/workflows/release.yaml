@@ -7,6 +7,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
       - uses: bufbuild/buf-setup-action@v1
@@ -15,6 +18,9 @@ jobs:
           input: 'proto'
 
   build-csharp:
+    permissions:
+      contents: read
+      packages: write
     needs: lint
     uses: ./.github/workflows/build-csharp.yaml
     with:
@@ -22,6 +28,9 @@ jobs:
     secrets: inherit # Ważne: przekazuje GITHUB_TOKEN do sub-workflow
 
   build-typescript:
+    permissions:
+      contents: read
+      packages: write
     needs: lint
     uses: ./.github/workflows/build-typescript.yaml
     with:
