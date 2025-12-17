@@ -1,9 +1,8 @@
-version: v1
-name: buf.build/init/ha3-proto
+version: v2
 
-build:
-  roots:
-    - proto
+modules:
+  - path: proto
+    name: buf.build/init/ha3-proto
 
 lint:
   use:
