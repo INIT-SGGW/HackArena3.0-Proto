@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package race.v1;
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+import "race/v1/telemetry.proto";
+
+message QuickJoinRequest {}
+
+message QuickJoinResponse {
+  uint64 car_id = 1;
+  string map_id = 2;
+}
+
+message SetControlsRequest {
+  uint64 car_id = 1;
+  double throttle = 2;
+  double brake = 3;
+  double steering = 4;
+}
+
+message SetControlsResponse {}
+
+message GetCarStateRequest {
+  uint64 car_id = 1;
+}
+
+service RaceService {
+  rpc QuickJoin(QuickJoinRequest) returns (QuickJoinResponse);
+  rpc SetControls(SetControlsRequest) returns (SetControlsResponse);
+  rpc GetCarState(GetCarStateRequest) returns (GetCarStateResponse);
+}
