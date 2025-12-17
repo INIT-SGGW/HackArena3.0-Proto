@@ -1,6 +1,10 @@
 version: v1
 name: buf.build/init/ha3-proto
 
+build:
+  roots:
+    - proto
+
 lint:
   use:
     - DEFAULT

@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate TypeScript Code
         run: |
-          buf generate --template buf.gen.typescript.yaml
+          buf generate --template buf/gen/typescript.yaml
 
       - name: Prepare package.json
         run: |

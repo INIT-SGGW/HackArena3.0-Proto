@@ -37,7 +37,7 @@ jobs:
 
       - name: Generate C# Code
         run: |
-          buf generate --template buf.gen.csharp.yaml
+          buf generate --template buf/gen/csharp.yaml
 
       - name: Prepare Project File
         run: |
