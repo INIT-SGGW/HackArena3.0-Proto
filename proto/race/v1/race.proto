@@ -24,10 +24,24 @@ message SetControlsResponse {}
 
 message GetCarStateRequest {
   uint64 car_id = 1;
+  uint32 hz = 2;
+}
+
+message StreamSettings {
+  uint32 requested_hz = 1;
+  uint32 effective_hz = 2;
+  bool clamped = 3;
+}
+
+message GetCarStateStreamResponse {
+  oneof payload {
+    StreamSettings settings = 1;
+    GetCarStateResponse state = 2;
+  }
 }
 
 service RaceService {
   rpc QuickJoin(QuickJoinRequest) returns (QuickJoinResponse);
   rpc SetControls(SetControlsRequest) returns (SetControlsResponse);
-  rpc GetCarState(GetCarStateRequest) returns (GetCarStateResponse);
+  rpc GetCarState(GetCarStateRequest) returns (stream GetCarStateStreamResponse);
 }
