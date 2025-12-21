@@ -6,42 +6,114 @@ option csharp_namespace = "HA3.Proto.Race.V1";
 
 import "race/v1/telemetry.proto";
 
-message QuickJoinRequest {}
+// Reason why the requested stream rate was adjusted by the server.
+enum StreamClampReason {
+  STREAM_CLAMP_REASON_UNSPECIFIED = 0;
+
+  // Requested rate is accepted as-is (no clamping applied).
+  STREAM_CLAMP_REASON_NONE = 1;
+
+  // Clamped due to server-wide maximum stream rate limits.
+  STREAM_CLAMP_REASON_SERVER_LIMIT = 2;
+}
+
+message QuickJoinRequest {
+  reserved 1 to 19;
+}
 
 message QuickJoinResponse {
   uint64 car_id = 1;
   string map_id = 2;
+
+  reserved 3 to 19;
 }
 
 message SetControlsRequest {
-  uint64 car_id = 1;
+  uint64 client_seq = 1;
+  
+  // Normalized throttle input in range [0.0, 1.0].
   double throttle = 2;
+
+  // Normalized brake input in range [0.0, 1.0].
   double brake = 3;
+  
+  // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
   double steering = 4;
+
+  reserved 5 to 19;
 }
 
-message SetControlsResponse {}
+message SetControlsResponse {
+  uint64 client_seq = 1;
 
-message GetCarStateRequest {
-  uint64 car_id = 1;
-  uint32 hz = 2;
+  double accepted_throttle = 2;
+  double accepted_brake = 3;
+  double accepted_steering = 4;
+
+  uint64 applies_from_tick = 5;
+
+  reserved 6 to 19;
+}
+
+message SetControlsDevRequest {
+  uint64 client_seq = 1;
+
+  // Normalized throttle input in range [0.0, 1.0].
+  double throttle = 2;
+
+  // Normalized brake input in range [0.0, 1.0].
+  double brake = 3;
+  
+  // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
+  double steering = 4;
+
+  uint64 target_car_id = 5;
+
+  reserved 6 to 19;
 }
 
 message StreamSettings {
   uint32 requested_hz = 1;
   uint32 effective_hz = 2;
-  bool clamped = 3;
+  StreamClampReason clamp_reason = 3;
+
+  reserved 4 to 19;
 }
 
-message GetCarStateStreamResponse {
+message GetFrontendSpectatorRequest {
+  uint32 requested_hz = 1;
+
+  reserved 2 to 19;
+}
+
+message FrontendSpectatorEvent {
   oneof payload {
     StreamSettings settings = 1;
-    GetCarStateResponse state = 2;
+    FrontendSpectatorSnapshot snapshot = 2;
   }
+
+  reserved 3 to 19;
+}
+
+message GetParticipantRaceRequest {
+  uint32 requested_hz = 1;
+
+  reserved 2 to 19;
+}
+
+message ParticipantRaceEvent {
+  oneof payload {
+    StreamSettings settings = 1;
+    ParticipantRaceSnapshot snapshot = 2;
+  }
+
+  reserved 3 to 19;
 }
 
 service RaceService {
   rpc QuickJoin(QuickJoinRequest) returns (QuickJoinResponse);
   rpc SetControls(SetControlsRequest) returns (SetControlsResponse);
-  rpc GetCarState(GetCarStateRequest) returns (stream GetCarStateStreamResponse);
+  rpc SetControlsDev(SetControlsDevRequest) returns (SetControlsResponse);
+  rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
+  rpc StreamParticipantRace(GetParticipantRaceRequest) returns (stream ParticipantRaceEvent);
 }

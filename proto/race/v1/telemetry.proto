@@ -4,42 +4,81 @@ package race.v1;
 
 option csharp_namespace = "HA3.Proto.Race.V1";
 
-message Vector3 {
-  double x = 1;
-  double y = 2;
-  double z = 3;
+import "race/v1/common.proto";
+
+// Core pose data shared across views.
+message CarKinematics {
+  Vector3 position = 1;
+  Quaternion orientation = 2;
+
+  reserved 3 to 19;
 }
 
-message Quaternion {
-  double x = 1;
-  double y = 2;
-  double z = 3;
-  double w = 4;
+// Full car telemetry.
+message CarParticipantState {
+  uint64 last_applied_client_seq = 1;
+  double speed_mps = 2;
+  double engine_rpm = 3;
+  int32 gear = 4;
+  double throttle_applied = 5;
+  double brake_applied = 6;
+  WheelAngles wheel_angles = 7;
+
+  reserved 8 to 19;
 }
 
-message WheelAngles {
-  double front_left_rad = 1;
-  double front_right_rad = 2;
+// Minimal data needed for rendering visuals.
+message CarRenderState {
+  WheelSpeeds wheel_speeds = 1;
+
+  reserved 2 to 19;
 }
 
-message WheelSpeeds {
-  double front_left_rps = 1;
-  double front_right_rps = 2;
-  double rear_left_rps = 3;
-  double rear_right_rps = 4;
-}
-
-message GetCarStateResponse {
+// Full state for frontend spectator mode.
+message FrontendCarFullState {
   uint64 car_id = 1;
-  Vector3 position = 2;
-  Quaternion orientation = 3;
-  double speed_mps = 4;
-  double engine_rpm = 5;
-  int32 gear = 6;
-  double throttle_applied = 7;
-  double brake_applied = 8;
-  WheelAngles wheel_steering = 9;
-  WheelSpeeds wheel_speeds = 10;
+  CarKinematics kinematics = 2;
+  CarParticipantState telemetry = 3;
+  CarRenderState render = 4;
 
-  reserved 11 to 19;
+  reserved 5 to 19;
+}
+
+// Spectator feed: full state for all cars.
+message FrontendSpectatorSnapshot {
+  uint64 tick = 1;
+  // Milliseconds since Unix epoch (UTC).
+  uint64 server_time_ms = 2;
+  repeated FrontendCarFullState cars = 3;
+
+  reserved 4 to 19;
+}
+
+// Participant view of own car (full driver detail).
+message ParticipantSelfState {
+  uint64 car_id = 1;
+  CarKinematics kinematics = 2;
+  CarParticipantState telemetry = 3;
+
+  reserved 4 to 19;
+}
+
+// Participant view of opponent cars.
+message ParticipantOpponentState {
+  uint64 car_id = 1;
+  CarKinematics kinematics = 2;
+
+  reserved 3 to 19;
+}
+
+// Participant race snapshot (self + opponents).
+message ParticipantRaceSnapshot {
+  uint64 tick = 1;
+  // Milliseconds since Unix epoch (UTC).
+  uint64 server_time_ms = 2;
+
+  ParticipantSelfState self = 3;
+  repeated ParticipantOpponentState opponents = 4;
+
+  reserved 5 to 19;
 }

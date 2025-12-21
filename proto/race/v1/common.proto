@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package race.v1;
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// 3D vector in meters.
+message Vector3 {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+
+  reserved 4 to 19;
+}
+
+// Unit quaternion representing orientation.
+message Quaternion {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  double w = 4;
+
+  reserved 5 to 19;
+}
+
+// Front wheel steering angles in radians.
+message WheelAngles {
+  double front_left_rad = 1;
+  double front_right_rad = 2;
+
+  reserved 3 to 19;
+}
+
+// Wheel angular speeds in rotations per second.
+message WheelSpeeds {
+  double front_left_rps = 1;
+  double front_right_rps = 2;
+  double rear_left_rps = 3;
+  double rear_right_rps = 4;
+
+  reserved 5 to 19;
+}
