@@ -32,13 +32,13 @@ message SetControlsRequest {
   uint64 client_seq = 1;
   
   // Normalized throttle input in range [0.0, 1.0].
-  double throttle = 2;
+  float throttle = 2;
 
   // Normalized brake input in range [0.0, 1.0].
-  double brake = 3;
+  float brake = 3;
   
   // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
-  double steering = 4;
+  float steering = 4;
 
   reserved 5 to 19;
 }
@@ -46,9 +46,9 @@ message SetControlsRequest {
 message SetControlsResponse {
   uint64 client_seq = 1;
 
-  double accepted_throttle = 2;
-  double accepted_brake = 3;
-  double accepted_steering = 4;
+  float accepted_throttle = 2;
+  float accepted_brake = 3;
+  float accepted_steering = 4;
 
   uint64 applies_from_tick = 5;
 
@@ -59,13 +59,13 @@ message SetControlsDevRequest {
   uint64 client_seq = 1;
 
   // Normalized throttle input in range [0.0, 1.0].
-  double throttle = 2;
+  float throttle = 2;
 
   // Normalized brake input in range [0.0, 1.0].
-  double brake = 3;
+  float brake = 3;
   
   // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
-  double steering = 4;
+  float steering = 4;
 
   uint64 target_car_id = 5;
 

@@ -17,11 +17,11 @@ message CarKinematics {
 // Full car telemetry.
 message CarParticipantState {
   uint64 last_applied_client_seq = 1;
-  double speed_mps = 2;
-  double engine_rpm = 3;
+  float speed_mps = 2;
+  float engine_rpm = 3;
   int32 gear = 4;
-  double throttle_applied = 5;
-  double brake_applied = 6;
+  float throttle_applied = 5;
+  float brake_applied = 6;
   WheelAngles wheel_angles = 7;
 
   reserved 8 to 19;
