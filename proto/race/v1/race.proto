@@ -17,6 +17,19 @@ enum StreamClampReason {
   STREAM_CLAMP_REASON_SERVER_LIMIT = 2;
 }
 
+enum SpectatorView {
+  SPECTATOR_VIEW_UNSPECIFIED = 0;
+  SPECTATOR_VIEW_PUBLIC = 1;
+  SPECTATOR_VIEW_TEAM = 2;
+  SPECTATOR_VIEW_ALL = 3;
+}
+
+enum ViewDowngradeReason {
+  VIEW_DOWNGRADE_REASON_UNSPECIFIED = 0;
+  VIEW_DOWNGRADE_REASON_NONE = 1;
+  VIEW_DOWNGRADE_REASON_NOT_AUTHORIZED = 2;
+}
+
 message QuickJoinRequest {
   reserved 1 to 19;
 }
@@ -77,13 +90,19 @@ message StreamSettings {
   uint32 effective_hz = 2;
   StreamClampReason clamp_reason = 3;
 
-  reserved 4 to 19;
+  SpectatorView resolved_view = 4;
+  ViewDowngradeReason view_downgrade_reason = 5;
+
+  string map_id = 6;
+
+  reserved 7 to 19;
 }
 
 message GetFrontendSpectatorRequest {
   uint32 requested_hz = 1;
+  SpectatorView requested_view = 2;
 
-  reserved 2 to 19;
+  reserved 3 to 19;
 }
 
 message FrontendSpectatorEvent {
