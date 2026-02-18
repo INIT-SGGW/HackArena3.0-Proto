@@ -31,15 +31,19 @@ message ForecastPoint {
   WeatherType type = 2;
   // Value range: 0.0..1.0
   float rain_probability = 3;
+  // Air temperature in Celsius degrees.
+  int32 temperature_c = 4;
 
-  reserved 4 to 19;
+  reserved 5 to 19;
 }
 
 // Current weather snapshot.
 message WeatherNow {
   WeatherType type = 1;
+  // Air temperature in Celsius degrees.
+  int32 temperature_c = 2;
 
-  reserved 2 to 19;
+  reserved 3 to 19;
 }
 
 // Forecast specification for explicit start time.
