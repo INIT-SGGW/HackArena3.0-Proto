@@ -16,6 +16,27 @@ message TrackMeta {
     uint32 version = 5;
 }
 
+// Catalog entry shown in admin/frontend map pickers.
+message MapCatalogEntry {
+    string map_id = 1;
+    string display_name = 2;
+    uint32 version = 3;
+
+    reserved 4 to 19;
+}
+
+// Request for available maps in catalog.
+message ListMapsRequest {
+    reserved 1 to 19;
+}
+
+// Response with maps available for race configuration.
+message ListMapsResponse {
+    repeated MapCatalogEntry maps = 1;
+
+    reserved 2 to 19;
+}
+
 message GetTrackMetaRequest {
     string id = 1;
 }
@@ -36,6 +57,8 @@ message GetTrackResponse {
 }
 
 service AssetService {
+    // Returns map catalog entries used by race configuration UIs.
+    rpc ListMaps(ListMapsRequest) returns (ListMapsResponse);
     rpc GetTrackMeta(GetTrackMetaRequest) returns (GetTrackMetaResponse);
     rpc GetTrack(GetTrackRequest) returns (stream GetTrackResponse);
 }
