@@ -31,12 +31,12 @@ message WheelAngles {
   reserved 3 to 19;
 }
 
-// Wheel angular speeds in rotations per second.
+// Wheel angular speeds in radians per second.
 message WheelSpeeds {
-  float front_left_rps = 1;
-  float front_right_rps = 2;
-  float rear_left_rps = 3;
-  float rear_right_rps = 4;
+  float front_left_radps = 1;
+  float front_right_radps = 2;
+  float rear_left_radps = 3;
+  float rear_right_radps = 4;
   
   reserved 5 to 19;
 }
