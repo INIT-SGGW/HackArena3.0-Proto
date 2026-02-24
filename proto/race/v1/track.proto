@@ -66,3 +66,26 @@ message CenterlineSample {
 
   reserved 11 to 19;
 }
+
+// Request for static centerline geometry used by wrappers and bot clients.
+message GetTrackDataRequest {
+  // Track identifier.
+  string map_id = 1;
+  // Optional explicit map version. If omitted, backend resolves active version for map_id.
+  optional uint32 map_version = 2;
+
+  reserved 3 to 19;
+}
+
+// Response with static centerline geometry.
+message GetTrackDataResponse {
+  TrackData track = 1;
+
+  reserved 2 to 19;
+}
+
+// API for machine-readable track geometry used by wrappers and bot clients.
+service TrackService {
+  // Returns TrackData for the specified track.
+  rpc GetTrackData(GetTrackDataRequest) returns (GetTrackDataResponse);
+}
