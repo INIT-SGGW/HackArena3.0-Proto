@@ -11,12 +11,10 @@ option csharp_namespace = "HA3.Proto.Race.V1";
 message TrackData {
   // Track identifier.
   string map_id = 1;
-  // Track geometry version.
-  uint32 version = 2;
 
   // Full arc length of one lap along the main centerline.
   // Must be > 0.
-  double lap_length_m = 3;
+  double lap_length_m = 2;
   // Ordered centerline samples for one closed lap.
   // Rules:
   // - strictly increasing by s_m,
@@ -24,9 +22,9 @@ message TrackData {
   // - for each sample: 0 <= s_m < lap_length_m,
   // - closing segment wraps from last sample to first sample,
   // - arc length wraps every lap: s == lap_length_m is equivalent to s == 0.
-  repeated CenterlineSample centerline_samples = 4;
+  repeated CenterlineSample centerline_samples = 3;
 
-  reserved 5 to 19;
+  reserved 4 to 19;
 }
 
 // Centerline sample with local frame and derived geometry.
@@ -71,10 +69,8 @@ message CenterlineSample {
 message GetTrackDataRequest {
   // Track identifier.
   string map_id = 1;
-  // Optional explicit map version. If omitted, backend resolves active version for map_id.
-  optional uint32 map_version = 2;
 
-  reserved 3 to 19;
+  reserved 2 to 19;
 }
 
 // Response with static centerline geometry.

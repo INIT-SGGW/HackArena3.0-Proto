@@ -36,16 +36,14 @@ message RaceConfigInput {
   google.protobuf.Timestamp end_time_utc = 3;
   // Track/map identifier used by race simulation.
   string map_id = 4;
-  // Optional explicit map version. If omitted, backend resolves active version for map_id.
-  optional uint32 map_version = 5;
   // Team start placement policy.
-  StartPlacementMode start_placement_mode = 6;
+  StartPlacementMode start_placement_mode = 5;
   // Fixed points multiplier.
-  float points_multiplier_fixed = 7;
+  float points_multiplier_fixed = 6;
   // In-game time-of-day preset.
-  TimeOfDayPreset time_of_day_preset = 8;
+  TimeOfDayPreset time_of_day_preset = 7;
 
-  reserved 9 to 19;
+  reserved 8 to 19;
 }
 
 // Persisted race configuration entry with backend-assigned identifier.
