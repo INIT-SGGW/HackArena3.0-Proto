@@ -1,0 +1,293 @@
+syntax = "proto3";
+
+package race.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "race/v1/runtime_settings.proto";
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// Global server activity mode.
+enum RuntimeActivityKind {
+  // Default/unknown value.
+  RUNTIME_ACTIVITY_KIND_UNSPECIFIED = 0;
+  // No public session active (technical break).
+  RUNTIME_ACTIVITY_KIND_NONE = 1;
+  // Official race mode is currently active.
+  RUNTIME_ACTIVITY_KIND_OFFICIAL_RACE = 2;
+  // Sandbox mode is currently active.
+  RUNTIME_ACTIVITY_KIND_SANDBOX = 3;
+}
+
+// Frontend/admin-provided sandbox configuration payload.
+message SandboxConfigInput {
+  // Human-readable sandbox name shown in frontend.
+  string sandbox_name = 1;
+  // Track/map identifier used by sandbox simulation.
+  string map_id = 2;
+  // Default in-game time-of-day preset for this sandbox.
+  RuntimeTimeOfDayPreset time_of_day_preset = 3;
+  // Ghost mode behavior.
+  GhostModeSettings ghost_mode = 4;
+
+  reserved 5 to 19;
+}
+
+// Persisted sandbox configuration entry with backend-assigned identifier.
+message SandboxConfig {
+  // Stable sandbox identifier.
+  string sandbox_id = 1;
+  // User-provided sandbox configuration fields.
+  SandboxConfigInput config = 2;
+
+  reserved 3 to 19;
+}
+
+// Request for persisted sandbox configuration list.
+message GetSandboxConfigsRequest {
+  reserved 1 to 19;
+}
+
+// Response with persisted sandbox configuration list.
+message GetSandboxConfigsResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Configured sandboxes.
+  repeated SandboxConfig sandboxes = 2;
+
+  reserved 3 to 19;
+}
+
+// Create single sandbox configuration entry.
+message CreateSandboxConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // New sandbox configuration payload.
+  SandboxConfigInput config = 2;
+
+  reserved 3 to 19;
+}
+
+// Created sandbox configuration entry.
+message CreateSandboxConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Created sandbox configuration entry.
+  SandboxConfig sandbox = 2;
+
+  reserved 3 to 19;
+}
+
+// Update single sandbox configuration entry.
+message UpdateSandboxConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target sandbox identifier to update.
+  string sandbox_id = 2;
+  // New sandbox configuration payload.
+  SandboxConfigInput config = 3;
+
+  reserved 4 to 19;
+}
+
+// Updated sandbox configuration entry.
+message UpdateSandboxConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Updated sandbox configuration entry.
+  SandboxConfig sandbox = 2;
+
+  reserved 3 to 19;
+}
+
+// Delete single sandbox configuration entry.
+message DeleteSandboxConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target sandbox identifier to delete.
+  string sandbox_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Delete confirmation.
+message DeleteSandboxConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Deleted sandbox identifier.
+  string sandbox_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Admin request for sandbox activation/deactivation.
+message SetSandboxActivationRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // true = activate sandbox mode, false = deactivate.
+  bool activate = 2;
+  // Target sandbox to start when activate=true.
+  // Required when activating. Ignored when deactivating.
+  string sandbox_id = 3;
+  // Optional execution time in UTC.
+  // If unset, change is applied immediately.
+  google.protobuf.Timestamp effective_at_utc = 4;
+
+  reserved 5 to 19;
+}
+
+// Scheduled activation/deactivation response.
+message SetSandboxActivationResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // true = sandbox mode will be active, false = runtime goes to NONE.
+  bool activate = 2;
+  // Selected sandbox identifier for activation operation.
+  string sandbox_id = 3;
+  // UTC timestamp when change becomes effective.
+  google.protobuf.Timestamp effective_at_utc = 4;
+
+  reserved 5 to 19;
+}
+
+// Admin request for immediate time-of-day change in active sandbox.
+message SetSandboxTimeOfDayRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target sandbox identifier. If empty, backend applies to active sandbox.
+  string sandbox_id = 2;
+  // Target in-game time-of-day preset.
+  RuntimeTimeOfDayPreset preset = 3;
+
+  reserved 4 to 19;
+}
+
+// Immediate time-of-day override response.
+message SetSandboxTimeOfDayResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Sandbox identifier that received the override.
+  string sandbox_id = 2;
+  // Applied in-game time-of-day preset.
+  RuntimeTimeOfDayPreset preset = 3;
+  // UTC timestamp when override was applied.
+  google.protobuf.Timestamp applied_at_utc = 4;
+
+  reserved 5 to 19;
+}
+
+// Active sandbox runtime details.
+message SandboxRuntimeInfo {
+  // Active sandbox identifier.
+  string sandbox_id = 1;
+  // Active sandbox display name.
+  string sandbox_name = 2;
+  // Active sandbox map identifier.
+  string map_id = 3;
+  // Active in-session time-of-day preset.
+  RuntimeTimeOfDayPreset active_time_of_day_preset = 4;
+  // Active ghost mode behavior.
+  GhostModeSettings ghost_mode = 5;
+  // UTC timestamp when sandbox session started.
+  google.protobuf.Timestamp started_at_utc = 6;
+  // Planned close timestamp if shutdown is scheduled.
+  google.protobuf.Timestamp closes_at_utc = 7;
+
+  reserved 8 to 19;
+}
+
+// Pending sandbox activation/deactivation operation.
+message PendingSandboxActivation {
+  // true = activate sandbox, false = deactivate sandbox.
+  bool activate = 1;
+  // Target sandbox identifier for activation operation.
+  string sandbox_id = 2;
+  // UTC timestamp when pending operation will execute.
+  google.protobuf.Timestamp execute_at_utc = 3;
+
+  reserved 4 to 19;
+}
+
+// Runtime state of activity mode and active sandboxes.
+message RuntimeState {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Current global runtime activity kind.
+  RuntimeActivityKind activity_kind = 2;
+  // Future-proof: list supports multiple sandboxes, currently max one active.
+  repeated SandboxRuntimeInfo sandboxes = 3;
+  // Present when sandbox activation/deactivation is scheduled for future time.
+  PendingSandboxActivation pending_sandbox_activation = 4;
+  // Server UTC timestamp.
+  google.protobuf.Timestamp server_time_utc = 5;
+
+  reserved 6 to 19;
+}
+
+// Frontend menu state for sandbox/runtime information panels.
+message FrontendMenuState {
+  // Runtime state used by frontend menu.
+  RuntimeState runtime = 1;
+  // Configured sandboxes for menu rendering.
+  repeated SandboxConfig configured_sandboxes = 2;
+
+  reserved 3 to 19;
+}
+
+// Request current runtime state (admin/internal).
+message GetRuntimeStateRequest {
+  reserved 1 to 19;
+}
+
+// Response with current runtime state.
+message GetRuntimeStateResponse {
+  // Current runtime state snapshot.
+  RuntimeState state = 1;
+
+  reserved 2 to 19;
+}
+
+// Frontend request for current menu state.
+message GetFrontendMenuStateRequest {
+  reserved 1 to 19;
+}
+
+// Frontend response with full menu snapshot.
+message GetFrontendMenuStateResponse {
+  // Current frontend menu state snapshot.
+  FrontendMenuState state = 1;
+
+  reserved 2 to 19;
+}
+
+// Frontend stream request for state changes.
+message StreamFrontendMenuStateRequest {
+  reserved 1 to 19;
+}
+
+// Admin API for sandbox configuration and runtime controls.
+service SandboxAdminService {
+  // Returns persisted sandbox configuration list.
+  rpc GetSandboxConfigs(GetSandboxConfigsRequest) returns (GetSandboxConfigsResponse);
+  // Creates single sandbox configuration entry.
+  rpc CreateSandboxConfig(CreateSandboxConfigRequest) returns (CreateSandboxConfigResponse);
+  // Updates single sandbox configuration entry.
+  rpc UpdateSandboxConfig(UpdateSandboxConfigRequest) returns (UpdateSandboxConfigResponse);
+  // Deletes single sandbox configuration entry.
+  rpc DeleteSandboxConfig(DeleteSandboxConfigRequest) returns (DeleteSandboxConfigResponse);
+  // Activates/deactivates sandbox mode.
+  rpc SetSandboxActivation(SetSandboxActivationRequest) returns (SetSandboxActivationResponse);
+  // Applies immediate sandbox time-of-day override.
+  rpc SetSandboxTimeOfDay(SetSandboxTimeOfDayRequest) returns (SetSandboxTimeOfDayResponse);
+  // Returns current runtime activity state.
+  rpc GetRuntimeState(GetRuntimeStateRequest) returns (GetRuntimeStateResponse);
+}
+
+// Frontend-facing API for runtime menu rendering.
+service FrontendMenuService {
+  // Returns full menu snapshot.
+  rpc GetFrontendMenuState(GetFrontendMenuStateRequest) returns (GetFrontendMenuStateResponse);
+  // Streams menu state: first event is full snapshot, then only backend state changes.
+  rpc StreamFrontendMenuState(StreamFrontendMenuStateRequest) returns (stream FrontendMenuState);
+}

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package race.v1;
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// In-game time-of-day presets used by runtime session controls.
+enum RuntimeTimeOfDayPreset {
+  // Default/unknown value.
+  RUNTIME_TIME_OF_DAY_PRESET_UNSPECIFIED = 0;
+  // Morning lighting preset.
+  RUNTIME_TIME_OF_DAY_PRESET_MORNING = 1;
+  // Noon lighting preset.
+  RUNTIME_TIME_OF_DAY_PRESET_NOON = 2;
+  // Evening lighting preset.
+  RUNTIME_TIME_OF_DAY_PRESET_EVENING = 3;
+  // Night lighting preset.
+  RUNTIME_TIME_OF_DAY_PRESET_NIGHT = 4;
+}
+
+// Rule used to combine ghost-mode entry conditions.
+enum GhostModeConditionLogic {
+  // Default/unknown value.
+  GHOST_MODE_CONDITION_LOGIC_UNSPECIFIED = 0;
+  // All configured entry conditions must be met (AND).
+  GHOST_MODE_CONDITION_LOGIC_AND = 1;
+  // Any configured entry condition can enable ghost mode (OR).
+  GHOST_MODE_CONDITION_LOGIC_OR = 2;
+}
+
+// Ghost mode behavior configuration.
+message GhostModeSettings {
+  // Enables/disables ghost mode logic.
+  bool enabled = 1;
+  // Minimum speed to enter ghost mode in meters per second.
+  float min_speed_enter_mps = 2;
+  // Minimum speed to stay in ghost mode in meters per second.
+  float min_speed_exit_mps = 3;
+  // Required time above enter threshold before ghost mode is enabled.
+  uint32 enter_delay_ms = 4;
+  // Required time below exit threshold before ghost mode is disabled.
+  uint32 exit_delay_ms = 5;
+  // Minimum completed laps required per car for ghost mode logic.
+  uint32 min_completed_laps = 6;
+  // Entry-condition combine rule for speed and completed-laps checks.
+  // This rule affects only ghost-mode entry.
+  GhostModeConditionLogic condition_logic = 7;
+  // Required time after overlap ends before ghost mode may be disabled.
+  // Overlap itself always keeps vehicles in ghost mode.
+  uint32 overlap_exit_delay_ms = 8;
+
+  reserved 9 to 19;
+}
