@@ -16,7 +16,7 @@ enum RuntimeActivityKind {
   RUNTIME_ACTIVITY_KIND_NONE = 1;
   // Official race mode is currently active.
   RUNTIME_ACTIVITY_KIND_OFFICIAL_RACE = 2;
-  // Sandbox mode is currently active.
+  // One or more sandboxes are currently active.
   RUNTIME_ACTIVITY_KIND_SANDBOX = 3;
 }
 
@@ -125,10 +125,9 @@ message DeleteSandboxConfigResponse {
 message SetSandboxActivationRequest {
   // Must match current runtime revision, otherwise request is rejected.
   uint64 expected_revision = 1;
-  // true = activate sandbox mode, false = deactivate.
+  // true = activate target sandbox, false = deactivate target sandbox.
   bool activate = 2;
-  // Target sandbox to start when activate=true.
-  // Required when activating. Ignored when deactivating.
+  // Target sandbox identifier for activation/deactivation operation.
   string sandbox_id = 3;
   // Optional execution time in UTC.
   // If unset, change is applied immediately.
@@ -141,9 +140,9 @@ message SetSandboxActivationRequest {
 message SetSandboxActivationResponse {
   // Monotonic runtime revision used for optimistic concurrency.
   uint64 revision = 1;
-  // true = sandbox mode will be active, false = runtime goes to NONE.
+  // true = target sandbox will be active, false = target sandbox will be inactive.
   bool activate = 2;
-  // Selected sandbox identifier for activation operation.
+  // Target sandbox identifier for activation/deactivation operation.
   string sandbox_id = 3;
   // UTC timestamp when change becomes effective.
   google.protobuf.Timestamp effective_at_utc = 4;
@@ -151,30 +150,32 @@ message SetSandboxActivationResponse {
   reserved 5 to 19;
 }
 
-// Admin request for immediate time-of-day change in active sandbox.
+// Admin request for time-of-day preset update in sandbox configuration.
 message SetSandboxTimeOfDayRequest {
-  // Must match current runtime revision, otherwise request is rejected.
+  // Must match current config revision, otherwise request is rejected.
   uint64 expected_revision = 1;
-  // Target sandbox identifier. If empty, backend applies to active sandbox.
+  // Target sandbox identifier.
   string sandbox_id = 2;
-  // Target in-game time-of-day preset.
+  // New default in-game time-of-day preset for target sandbox.
   RuntimeTimeOfDayPreset preset = 3;
 
   reserved 4 to 19;
 }
 
-// Immediate time-of-day override response.
+// Time-of-day preset update response.
 message SetSandboxTimeOfDayResponse {
-  // Monotonic runtime revision used for optimistic concurrency.
+  // Monotonic config revision used for optimistic concurrency.
   uint64 revision = 1;
-  // Sandbox identifier that received the override.
+  // Target sandbox identifier.
   string sandbox_id = 2;
-  // Applied in-game time-of-day preset.
+  // Updated default in-game time-of-day preset.
   RuntimeTimeOfDayPreset preset = 3;
-  // UTC timestamp when override was applied.
+  // UTC timestamp when configuration update was applied.
   google.protobuf.Timestamp applied_at_utc = 4;
+  // true if update was also applied to currently active runtime sandbox instance.
+  bool applied_to_active_runtime = 5;
 
-  reserved 5 to 19;
+  reserved 6 to 19;
 }
 
 // Active sandbox runtime details.
@@ -215,10 +216,10 @@ message RuntimeState {
   uint64 revision = 1;
   // Current global runtime activity kind.
   RuntimeActivityKind activity_kind = 2;
-  // Future-proof: list supports multiple sandboxes, currently max one active.
+  // Currently active sandboxes (can contain multiple entries).
   repeated SandboxRuntimeInfo sandboxes = 3;
-  // Present when sandbox activation/deactivation is scheduled for future time.
-  PendingSandboxActivation pending_sandbox_activation = 4;
+  // Pending sandbox activation/deactivation operations.
+  repeated PendingSandboxActivation pending_sandbox_activations = 4;
   // Server UTC timestamp.
   google.protobuf.Timestamp server_time_utc = 5;
 
@@ -278,7 +279,7 @@ service SandboxAdminService {
   rpc DeleteSandboxConfig(DeleteSandboxConfigRequest) returns (DeleteSandboxConfigResponse);
   // Activates/deactivates sandbox mode.
   rpc SetSandboxActivation(SetSandboxActivationRequest) returns (SetSandboxActivationResponse);
-  // Applies immediate sandbox time-of-day override.
+  // Updates sandbox default time-of-day preset and applies it if sandbox is active.
   rpc SetSandboxTimeOfDay(SetSandboxTimeOfDayRequest) returns (SetSandboxTimeOfDayResponse);
   // Returns current runtime activity state.
   rpc GetRuntimeState(GetRuntimeStateRequest) returns (GetRuntimeStateResponse);
