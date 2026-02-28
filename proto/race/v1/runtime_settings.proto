@@ -34,11 +34,11 @@ message GhostModeSettings {
   bool enabled = 1;
   // Maximum speed to enter ghost mode in meters per second.
   float max_speed_enter_mps = 2;
-  // Maximum speed to stay in ghost mode in meters per second.
-  float max_speed_exit_mps = 3;
+  // Minimum speed to exit ghost mode in meters per second.
+  float min_speed_exit_mps = 3;
   // Required time at or below enter threshold before ghost mode is enabled.
   uint32 enter_delay_ms = 4;
-  // Required time above exit threshold before ghost mode is disabled.
+  // Required time at or above exit threshold before ghost mode is disabled.
   uint32 exit_delay_ms = 5;
   // Minimum completed laps required per car for ghost mode logic.
   uint32 min_completed_laps = 6;
