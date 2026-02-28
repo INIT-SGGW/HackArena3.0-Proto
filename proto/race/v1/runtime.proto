@@ -131,6 +131,8 @@ message SetSandboxActivationRequest {
   string sandbox_id = 3;
   // Optional execution time in UTC.
   // If unset, change is applied immediately.
+  // At most one pending operation can exist per sandbox_id.
+  // Scheduling again for same sandbox_id replaces previous pending operation.
   google.protobuf.Timestamp effective_at_utc = 4;
 
   reserved 5 to 19;
@@ -148,6 +150,28 @@ message SetSandboxActivationResponse {
   google.protobuf.Timestamp effective_at_utc = 4;
 
   reserved 5 to 19;
+}
+
+// Admin request to cancel pending sandbox activation/deactivation schedule.
+message CancelSandboxActivationScheduleRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target sandbox identifier whose pending operation should be canceled.
+  string sandbox_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Cancel pending sandbox activation/deactivation schedule response.
+message CancelSandboxActivationScheduleResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Target sandbox identifier.
+  string sandbox_id = 2;
+  // true if a pending operation existed and was canceled.
+  bool canceled = 3;
+
+  reserved 4 to 19;
 }
 
 // Admin request for time-of-day preset update in sandbox configuration.
@@ -200,6 +224,7 @@ message SandboxRuntimeInfo {
 
 // Pending sandbox activation/deactivation operation.
 message PendingSandboxActivation {
+  // At most one pending entry can exist for each sandbox_id.
   // true = activate sandbox, false = deactivate sandbox.
   bool activate = 1;
   // Target sandbox identifier for activation operation.
@@ -219,6 +244,7 @@ message RuntimeState {
   // Currently active sandboxes (can contain multiple entries).
   repeated SandboxRuntimeInfo sandboxes = 3;
   // Pending sandbox activation/deactivation operations.
+  // Max one entry per sandbox_id.
   repeated PendingSandboxActivation pending_sandbox_activations = 4;
   // Server UTC timestamp.
   google.protobuf.Timestamp server_time_utc = 5;
@@ -279,6 +305,8 @@ service SandboxAdminService {
   rpc DeleteSandboxConfig(DeleteSandboxConfigRequest) returns (DeleteSandboxConfigResponse);
   // Activates/deactivates sandbox mode.
   rpc SetSandboxActivation(SetSandboxActivationRequest) returns (SetSandboxActivationResponse);
+  // Cancels pending activation/deactivation schedule for target sandbox.
+  rpc CancelSandboxActivationSchedule(CancelSandboxActivationScheduleRequest) returns (CancelSandboxActivationScheduleResponse);
   // Updates sandbox default time-of-day preset and applies it if sandbox is active.
   rpc SetSandboxTimeOfDay(SetSandboxTimeOfDayRequest) returns (SetSandboxTimeOfDayResponse);
   // Returns current runtime activity state.
