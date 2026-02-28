@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package race.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "race/v1/runtime_settings.proto";
+import "race/v1/runtime.proto";
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// Admin request to schedule sandbox activation/deactivation.
+message ScheduleSandboxActivationRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // true = activate target sandbox, false = deactivate target sandbox.
+  bool activate = 2;
+  // Target sandbox identifier for activation/deactivation operation.
+  string sandbox_id = 3;
+  // Optional execution time in UTC.
+  // If unset, change is applied immediately.
+  // At most one pending operation can exist per sandbox_id.
+  // Scheduling again for same sandbox_id replaces previous pending operation.
+  google.protobuf.Timestamp effective_at_utc = 4;
+
+  reserved 5 to 19;
+}
+
+// Scheduled activation/deactivation response.
+message ScheduleSandboxActivationResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // true = target sandbox will be active, false = target sandbox will be inactive.
+  bool activate = 2;
+  // Target sandbox identifier for activation/deactivation operation.
+  string sandbox_id = 3;
+  // UTC timestamp when change becomes effective.
+  google.protobuf.Timestamp effective_at_utc = 4;
+
+  reserved 5 to 19;
+}
+
+// Admin request to cancel pending sandbox activation/deactivation schedule.
+message CancelSandboxActivationScheduleRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target sandbox identifier whose pending operation should be canceled.
+  string sandbox_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Cancel pending sandbox activation/deactivation schedule response.
+message CancelSandboxActivationScheduleResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Target sandbox identifier.
+  string sandbox_id = 2;
+  // true if a pending operation existed and was canceled.
+  bool canceled = 3;
+
+  reserved 4 to 19;
+}
+
+// Active sandbox runtime details (admin view).
+message AdminSandboxRuntimeInfo {
+  // Active sandbox identifier.
+  string sandbox_id = 1;
+  // Active sandbox display name.
+  string sandbox_name = 2;
+  // Active sandbox map identifier.
+  string map_id = 3;
+  // Active in-session time-of-day preset.
+  RuntimeTimeOfDayPreset active_time_of_day_preset = 4;
+  // Active ghost mode behavior.
+  GhostModeSettings ghost_mode = 5;
+  // UTC timestamp when sandbox session started.
+  google.protobuf.Timestamp started_at_utc = 6;
+  // Planned close timestamp if shutdown is scheduled.
+  google.protobuf.Timestamp closes_at_utc = 7;
+
+  reserved 8 to 19;
+}
+
+// Pending sandbox activation/deactivation operation (admin view).
+message AdminPendingSandboxOperation {
+  // At most one pending entry can exist for each sandbox_id.
+  // true = activate sandbox, false = deactivate sandbox.
+  bool activate = 1;
+  // Target sandbox identifier for activation operation.
+  string sandbox_id = 2;
+  // UTC timestamp when pending operation will execute.
+  google.protobuf.Timestamp execute_at_utc = 3;
+
+  reserved 4 to 19;
+}
+
+// Runtime state of activity mode and active sandboxes (admin view).
+message AdminRuntimeState {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Current global runtime activity kind.
+  RuntimeActivityKind activity_kind = 2;
+  // Currently active sandboxes (can contain multiple entries).
+  repeated AdminSandboxRuntimeInfo sandboxes = 3;
+  // Pending sandbox activation/deactivation operations.
+  // Max one entry per sandbox_id.
+  repeated AdminPendingSandboxOperation pending_sandbox_operations = 4;
+  // Server UTC timestamp.
+  google.protobuf.Timestamp server_time_utc = 5;
+
+  reserved 6 to 19;
+}
+
+// Request current runtime state (admin/internal).
+message GetAdminRuntimeStateRequest {
+  reserved 1 to 19;
+}
+
+// Response with current runtime state (admin/internal).
+message GetAdminRuntimeStateResponse {
+  // Current runtime state snapshot.
+  AdminRuntimeState state = 1;
+
+  reserved 2 to 19;
+}
+
+// Admin API for sandbox runtime controls.
+service SandboxRuntimeAdminService {
+  // Schedules sandbox activation/deactivation.
+  rpc ScheduleSandboxActivation(ScheduleSandboxActivationRequest) returns (ScheduleSandboxActivationResponse);
+  // Cancels pending activation/deactivation schedule for target sandbox.
+  rpc CancelSandboxActivationSchedule(CancelSandboxActivationScheduleRequest) returns (CancelSandboxActivationScheduleResponse);
+  // Returns current runtime activity state (admin/internal).
+  rpc GetAdminRuntimeState(GetAdminRuntimeStateRequest) returns (GetAdminRuntimeStateResponse);
+}

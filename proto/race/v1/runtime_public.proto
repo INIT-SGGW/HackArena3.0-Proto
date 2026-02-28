@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package race.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "race/v1/runtime_settings.proto";
+import "race/v1/runtime.proto";
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// Public view of an active sandbox runtime.
+message PublicSandboxRuntimeInfo {
+  // Active sandbox identifier.
+  string sandbox_id = 1;
+  // Active sandbox display name.
+  string sandbox_name = 2;
+  // Active sandbox map identifier.
+  string map_id = 3;
+  // Active in-session time-of-day preset.
+  RuntimeTimeOfDayPreset active_time_of_day_preset = 4;
+  // Active ghost mode behavior.
+  GhostModeSettings ghost_mode = 5;
+  // Number of currently connected players in this sandbox.
+  uint32 active_player_count = 6;
+
+  reserved 9 to 19;
+}
+
+// Public runtime state for menu rendering.
+message PublicRuntimeState {
+  // Current global runtime activity kind.
+  RuntimeActivityKind activity_kind = 1;
+  // Currently active sandboxes.
+  repeated PublicSandboxRuntimeInfo active_sandboxes = 2;
+  // Server UTC timestamp used by frontend to render countdowns.
+  google.protobuf.Timestamp server_time_utc = 3;
+
+  reserved 4 to 19;
+}
+
+// Public menu state for sandbox/runtime information panels.
+message PublicMenuState {
+  // Public runtime state used by menu.
+  PublicRuntimeState runtime = 1;
+
+  reserved 2 to 19;
+}
+
+// Public request for current menu state.
+message GetPublicMenuStateRequest {
+  reserved 1 to 19;
+}
+
+// Public response with full menu snapshot.
+message GetPublicMenuStateResponse {
+  // Current public menu state snapshot.
+  PublicMenuState state = 1;
+
+  reserved 2 to 19;
+}
+
+// Public stream request for state changes.
+message StreamPublicMenuStateRequest {
+  reserved 1 to 19;
+}
+
+// Public-facing API for runtime menu rendering.
+service PublicMenuService {
+  // Returns full menu snapshot.
+  rpc GetPublicMenuState(GetPublicMenuStateRequest) returns (GetPublicMenuStateResponse);
+  // Streams menu state: first event is full snapshot, then only backend state changes.
+  rpc StreamPublicMenuState(StreamPublicMenuStateRequest) returns (stream PublicMenuState);
+}
