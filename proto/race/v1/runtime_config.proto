@@ -8,6 +8,32 @@ import "race/v1/runtime_settings.proto";
 
 option csharp_namespace = "HA3.Proto.Race.V1";
 
+// Rule used to assign teams to start slots.
+enum StartPlacementMode {
+  // Default/unknown value.
+  START_PLACEMENT_MODE_UNSPECIFIED = 0;
+  // Randomized start order when race starts.
+  START_PLACEMENT_MODE_RANDOM = 1;
+  // Start order follows current scoreboard (higher points first).
+  START_PLACEMENT_MODE_SCOREBOARD = 2;
+  // Start order follows reverse scoreboard (higher points last).
+  START_PLACEMENT_MODE_REVERSED_SCOREBOARD = 3;
+}
+
+// In-game time-of-day preset used for race configuration.
+enum RaceTimeOfDayPreset {
+  // Default/unknown value.
+  RACE_TIME_OF_DAY_PRESET_UNSPECIFIED = 0;
+  // Morning lighting preset.
+  RACE_TIME_OF_DAY_PRESET_MORNING = 1;
+  // Noon lighting preset.
+  RACE_TIME_OF_DAY_PRESET_NOON = 2;
+  // Evening lighting preset.
+  RACE_TIME_OF_DAY_PRESET_EVENING = 3;
+  // Night lighting preset.
+  RACE_TIME_OF_DAY_PRESET_NIGHT = 4;
+}
+
 // Admin-provided sandbox configuration payload.
 message SandboxConfigInput {
   // Human-readable sandbox name shown in frontend.
@@ -137,6 +163,115 @@ message UpdateSandboxTimeOfDayResponse {
   reserved 6 to 19;
 }
 
+// Race configuration payload provided by admin tools.
+message RaceConfigInput {
+  // Human-readable race name shown in frontend.
+  string race_name = 1;
+  // UTC datetime when backend automatically enters staging phase for this race.
+  google.protobuf.Timestamp start_time_utc = 2;
+  // Race duration in seconds, counted from running phase start.
+  uint32 race_duration_sec = 3;
+  // Track/map identifier used by race simulation.
+  string map_id = 4;
+  // Team start placement policy.
+  StartPlacementMode start_placement_mode = 5;
+  // Fixed points multiplier.
+  float points_multiplier_fixed = 6;
+  // In-game time-of-day preset.
+  RaceTimeOfDayPreset time_of_day_preset = 7;
+
+  reserved 8 to 19;
+}
+
+// Persisted race configuration entry with backend-assigned identifier.
+message RaceConfig {
+  // Stable race identifier.
+  string race_id = 1;
+  // User-provided race configuration fields.
+  RaceConfigInput config = 2;
+
+  reserved 3 to 19;
+}
+
+// Request for persisted race configuration schedule.
+message GetRaceConfigsRequest {
+  reserved 1 to 19;
+}
+
+// Response with persisted race configuration schedule.
+message GetRaceConfigsResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Entries should be sorted by start_time_utc ascending and have unique race_id.
+  repeated RaceConfig races = 2;
+
+  reserved 3 to 19;
+}
+
+// Create single race configuration entry.
+message CreateRaceConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // New race configuration payload.
+  RaceConfigInput config = 2;
+
+  reserved 3 to 19;
+}
+
+// Created race configuration entry.
+message CreateRaceConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Created race configuration entry.
+  RaceConfig race = 2;
+
+  reserved 3 to 19;
+}
+
+// Update single race configuration entry.
+message UpdateRaceConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target race identifier to update.
+  string race_id = 2;
+  // New race configuration payload.
+  // Active race cannot be updated.
+  RaceConfigInput config = 3;
+
+  reserved 4 to 19;
+}
+
+// Updated race configuration entry.
+message UpdateRaceConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Updated race configuration entry.
+  RaceConfig race = 2;
+
+  reserved 3 to 19;
+}
+
+// Delete single race configuration entry.
+message DeleteRaceConfigRequest {
+  // Must match current config revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  // Target race identifier to delete.
+  // Active race cannot be deleted.
+  string race_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Delete confirmation.
+message DeleteRaceConfigResponse {
+  // Monotonic config revision used for optimistic concurrency.
+  uint64 revision = 1;
+  // Deleted race identifier.
+  string race_id = 2;
+
+  reserved 3 to 19;
+}
+
 // Admin API for sandbox configuration management.
 service SandboxConfigAdminService {
   // Returns persisted sandbox configuration list.
@@ -149,4 +284,16 @@ service SandboxConfigAdminService {
   rpc DeleteSandboxConfig(DeleteSandboxConfigRequest) returns (DeleteSandboxConfigResponse);
   // Updates sandbox default time-of-day preset and applies it if sandbox is active.
   rpc UpdateSandboxTimeOfDay(UpdateSandboxTimeOfDayRequest) returns (UpdateSandboxTimeOfDayResponse);
+}
+
+// Admin API for race configuration management.
+service RaceConfigAdminService {
+  // Returns persisted race configuration schedule.
+  rpc GetRaceConfigs(GetRaceConfigsRequest) returns (GetRaceConfigsResponse);
+  // Creates single race configuration entry.
+  rpc CreateRaceConfig(CreateRaceConfigRequest) returns (CreateRaceConfigResponse);
+  // Updates single race configuration entry.
+  rpc UpdateRaceConfig(UpdateRaceConfigRequest) returns (UpdateRaceConfigResponse);
+  // Deletes single race configuration entry.
+  rpc DeleteRaceConfig(DeleteRaceConfigRequest) returns (DeleteRaceConfigResponse);
 }

@@ -5,7 +5,6 @@ package race.v1;
 import "google/protobuf/timestamp.proto";
 
 import "race/v1/runtime_settings.proto";
-import "race/v1/runtime.proto";
 
 option csharp_namespace = "HA3.Proto.Race.V1";
 
@@ -24,27 +23,116 @@ message PublicSandboxRuntimeInfo {
   // Number of currently connected players in this sandbox.
   uint32 active_player_count = 6;
 
-  reserved 9 to 19;
+  reserved 7 to 19;
+}
+
+// Public view of official race staging phase.
+message PublicOfficialRaceStagingState {
+  // Number of participants ready to start.
+  uint32 ready_player_count = 1;
+  // Total number of participants expected to join this race.
+  uint32 expected_player_count = 2;
+
+  reserved 3 to 19;
+}
+
+// Public view of official race countdown phase.
+message PublicOfficialRaceCountdownState {
+  // UTC timestamp when countdown ends and race enters running phase.
+  google.protobuf.Timestamp countdown_end_at_utc = 1;
+
+  reserved 2 to 19;
+}
+
+// Public view of official race running state.
+message PublicOfficialRaceRunningState {
+  // Planned UTC datetime when running phase should end.
+  google.protobuf.Timestamp planned_end_at_utc = 1;
+
+  reserved 2 to 19;
+}
+
+// Public view of official race finished state.
+message PublicOfficialRaceFinishedState {
+  reserved 1 to 19;
+}
+
+// Public view of official race aborted state.
+message PublicOfficialRaceAbortedState {
+  reserved 1 to 19;
+}
+
+// Public view of active official race runtime.
+message PublicOfficialRaceRuntimeInfo {
+  // Active official race display name.
+  string race_name = 1;
+  // Active official race map identifier.
+  string map_id = 2;
+  // Scheduled UTC datetime when this race entered staging phase.
+  google.protobuf.Timestamp start_time_utc = 3;
+  // Configured race duration in seconds, counted from running phase start.
+  uint32 race_duration_sec = 4;
+  // Current official race phase details.
+  oneof phase_state {
+    // Staging phase details.
+    PublicOfficialRaceStagingState staging = 5;
+    // Countdown phase details.
+    PublicOfficialRaceCountdownState countdown = 6;
+    // Running phase details.
+    PublicOfficialRaceRunningState running = 7;
+    // Finished phase details.
+    PublicOfficialRaceFinishedState finished = 8;
+    // Aborted phase details.
+    PublicOfficialRaceAbortedState aborted = 9;
+  }
+
+  reserved 10 to 19;
+}
+
+// Public summary entry for an upcoming race.
+message PublicUpcomingRaceSummary {
+  // Upcoming race display name.
+  string race_name = 1;
+  // Scheduled race start datetime in UTC.
+  google.protobuf.Timestamp start_time_utc = 2;
+  // Configured race duration in seconds, counted from running phase start.
+  uint32 race_duration_sec = 3;
+
+  reserved 4 to 19;
+}
+
+// Public runtime data for sandbox activity mode.
+message PublicSandboxRuntimeMode {
+  // Active sandboxes for sandbox activity mode.
+  repeated PublicSandboxRuntimeInfo sandboxes = 1;
+
+  reserved 2 to 19;
 }
 
 // Public runtime state for menu rendering.
 message PublicRuntimeState {
-  // Current global runtime activity kind.
-  RuntimeActivityKind activity_kind = 1;
-  // Currently active sandboxes.
-  repeated PublicSandboxRuntimeInfo active_sandboxes = 2;
   // Server UTC timestamp used by frontend to render countdowns.
   google.protobuf.Timestamp server_time_utc = 3;
+  // Active runtime mode.
+  // If unset, server is in technical break (none activity).
+  oneof active_mode {
+    // Official race runtime mode.
+    PublicOfficialRaceRuntimeInfo official_race = 4;
+    // Sandbox runtime mode.
+    PublicSandboxRuntimeMode sandbox_mode = 5;
+  }
 
-  reserved 4 to 19;
+  reserved 6 to 19;
 }
 
 // Public menu state for sandbox/runtime information panels.
 message PublicMenuState {
   // Public runtime state used by menu.
   PublicRuntimeState runtime = 1;
+  // Upcoming races in backend-defined upcoming window.
+  repeated PublicUpcomingRaceSummary upcoming_races = 2;
 
-  reserved 2 to 19;
+  reserved 3 to 19;
 }
 
 // Public request for current menu state.
