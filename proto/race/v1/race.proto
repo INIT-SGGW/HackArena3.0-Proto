@@ -30,12 +30,19 @@ enum ViewDowngradeReason {
   VIEW_DOWNGRADE_REASON_NOT_AUTHORIZED = 2;
 }
 
-message QuickJoinRequest {
-  reserved 1 to 19;
+// Development-only quick join request for entering an active sandbox session.
+message QuickJoinDevRequest {
+  // Target active sandbox identifier to join.
+  string sandbox_id = 1;
+
+  reserved 2 to 19;
 }
 
-message QuickJoinResponse {
+// Development-only quick join response with assigned participant vehicle data.
+message QuickJoinDevResponse {
+  // Assigned participant vehicle identifier.
   uint64 car_id = 1;
+  // Map identifier of the joined sandbox session.
   string map_id = 2;
 
   reserved 3 to 19;
@@ -130,7 +137,8 @@ message ParticipantRaceEvent {
 }
 
 service RaceService {
-  rpc QuickJoin(QuickJoinRequest) returns (QuickJoinResponse);
+  // Development-only helper for quickly joining an active sandbox by sandbox_id.
+  rpc QuickJoinDev(QuickJoinDevRequest) returns (QuickJoinDevResponse);
   rpc SetControls(SetControlsRequest) returns (SetControlsResponse);
   rpc SetControlsDev(SetControlsDevRequest) returns (SetControlsResponse);
   rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
