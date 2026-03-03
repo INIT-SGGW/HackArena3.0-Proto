@@ -105,11 +105,34 @@ message StreamSettings {
   reserved 7 to 19;
 }
 
-message GetFrontendSpectatorRequest {
-  uint32 requested_hz = 1;
-  SpectatorView requested_view = 2;
+// Spectator target for streaming a specific active sandbox.
+message SpectatorSandboxTarget {
+  // Target active sandbox identifier.
+  string sandbox_id = 1;
 
-  reserved 3 to 19;
+  reserved 2 to 19;
+}
+
+// Spectator target for streaming the active official race.
+message SpectatorOfficialRaceTarget {
+  reserved 1 to 19;
+}
+
+message GetFrontendSpectatorRequest {
+  // Requested stream frequency for spectator updates.
+  uint32 requested_hz = 1;
+  // Requested spectator data scope.
+  SpectatorView requested_view = 2;
+  // Explicit spectator stream target.
+  // Exactly one target should be set by client.
+  oneof target {
+    // Stream the selected active sandbox.
+    SpectatorSandboxTarget sandbox = 3;
+    // Stream the active official race.
+    SpectatorOfficialRaceTarget official_race = 4;
+  }
+
+  reserved 5 to 19;
 }
 
 message FrontendSpectatorEvent {
