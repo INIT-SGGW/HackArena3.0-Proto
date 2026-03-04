@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "auth/v1/game_token.proto";
+
+option csharp_namespace = "HA3.Proto.Auth.V1";
+
+// Issue TeamBot token request.
+message IssueTeamBotTokenRequest {
+  // Team id (UUID) used as both:
+  // - standard.sub
+  // - TeamBotTokenClaims.team_id
+  string team_id = 1;
+
+  reserved 2 to 19;
+}
+
+// Issue TeamBot development token request.
+message IssueTeamBotDevTokenRequest {
+  // User id (UUID) used as standard.sub.
+  string user_id = 1;
+  // Team id (UUID) used as TeamBotDevTokenClaims.team_id.
+  string team_id = 2;
+  // Local runtime instance identifier.
+  string instance_uuid = 3;
+
+  reserved 4 to 19;
+}
+
+// Issue global spectator token request.
+message IssueSpectatorTokenRequest {
+  // User id (UUID) used as standard.sub.
+  string user_id = 1;
+
+  reserved 2 to 19;
+}
+
+// Issue team spectator token request.
+message IssueTeamSpectatorTokenRequest {
+  // User id (UUID) used as standard.sub.
+  string user_id = 1;
+  // Team id (UUID) used as TeamSpectatorTokenClaims.team_id.
+  string team_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Issue team spectator development token request.
+message IssueTeamDevSpectatorTokenRequest {
+  // User id (UUID) used as standard.sub.
+  string user_id = 1;
+  // Team id (UUID) used as TeamDevSpectatorTokenClaims.team_id.
+  string team_id = 2;
+
+  reserved 3 to 19;
+}
+
+// Generic token issue response.
+message IssueGameTokenResponse {
+  SignedGameToken token = 1;
+
+  reserved 2 to 19;
+}
+
+// Auth API for issuing game tokens.
+service GameTokenIssuerService {
+  // Issues official Team Bot token:
+  // - iss: ha3-auth
+  // - aud: ha3-official
+  // - sub: team_id
+  // - scopes: race.control, race.read.team, race.read.public
+  rpc IssueTeamBotToken(IssueTeamBotTokenRequest) returns (IssueGameTokenResponse);
+  // Issues development Team Bot token:
+  // - iss: ha3-dev-auth
+  // - aud: ha3-local
+  // - sub: user_id
+  // - additional claim: instance_uuid
+  // - scopes: race.control, race.read.team, race.read.public
+  rpc IssueTeamBotDevToken(IssueTeamBotDevTokenRequest) returns (IssueGameTokenResponse);
+  // Issues global spectator token:
+  // - iss: ha3-auth
+  // - aud: ha3-official
+  // - sub: user_id
+  // - scopes: race.read.all
+  rpc IssueSpectatorToken(IssueSpectatorTokenRequest) returns (IssueGameTokenResponse);
+  // Issues official team spectator token:
+  // - iss: ha3-auth
+  // - aud: ha3-official
+  // - sub: user_id
+  // - scopes: race.read.public, race.read.team, race.team.configure
+  rpc IssueTeamSpectatorToken(IssueTeamSpectatorTokenRequest) returns (IssueGameTokenResponse);
+  // Issues development team spectator token:
+  // - iss: ha3-dev-auth
+  // - aud: ha3-local
+  // - sub: user_id
+  // - scopes: race.read.team, race.team.configure
+  rpc IssueTeamDevSpectatorToken(IssueTeamDevSpectatorTokenRequest) returns (IssueGameTokenResponse);
+}
