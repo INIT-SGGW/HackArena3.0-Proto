@@ -43,7 +43,6 @@ message GameTokenHeader {
   string kid = 2;
   JwtType typ = 3;
 
-  reserved 4 to 19;
 }
 
 // JWT claims shared by all game-token types.
@@ -68,7 +67,6 @@ message TokenStandardClaims {
   string jti = 6;
   repeated TokenScope scopes = 7;
 
-  reserved 8 to 19;
 }
 
 // Team-bot token claims.
@@ -77,7 +75,6 @@ message TeamBotTokenClaims {
   // Team id claim (UUID). MUST be equal to standard.sub.
   string team_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Team-bot development token claims.
@@ -88,14 +85,12 @@ message TeamBotDevTokenClaims {
   // Local runtime instance identifier.
   string instance_uuid = 3;
 
-  reserved 4 to 19;
 }
 
 // Global spectator token claims.
 message SpectatorTokenClaims {
   TokenStandardClaims standard = 1;
 
-  reserved 2 to 19;
 }
 
 // Team spectator token claims.
@@ -104,7 +99,6 @@ message TeamSpectatorTokenClaims {
   // Team id claim (UUID). For this token type, standard.sub is user_id.
   string team_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Team spectator development token claims.
@@ -113,7 +107,6 @@ message TeamDevSpectatorTokenClaims {
   // Team id claim (UUID). For this token type, standard.sub is user_id.
   string team_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Typed game-token claims.
@@ -126,7 +119,6 @@ message GameTokenClaims {
     TeamDevSpectatorTokenClaims team_dev_spectator = 5;
   }
 
-  reserved 6 to 19;
 }
 
 // Issued game token payload.
@@ -138,5 +130,4 @@ message SignedGameToken {
   // JWK key id copied from header.
   string kid = 3;
 
-  reserved 4 to 19;
 }

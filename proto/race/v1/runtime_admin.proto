@@ -22,7 +22,6 @@ message ScheduleSandboxActivationRequest {
   // Scheduling again for same sandbox_id replaces previous pending operation.
   google.protobuf.Timestamp effective_at_utc = 4;
 
-  reserved 5 to 19;
 }
 
 // Scheduled activation/deactivation response.
@@ -36,7 +35,6 @@ message ScheduleSandboxActivationResponse {
   // UTC timestamp when change becomes effective.
   google.protobuf.Timestamp effective_at_utc = 4;
 
-  reserved 5 to 19;
 }
 
 // Admin request to cancel pending sandbox activation/deactivation schedule.
@@ -46,7 +44,6 @@ message CancelSandboxActivationScheduleRequest {
   // Target sandbox identifier whose pending operation should be canceled.
   string sandbox_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Cancel pending sandbox activation/deactivation schedule response.
@@ -58,7 +55,6 @@ message CancelSandboxActivationScheduleResponse {
   // true if a pending operation existed and was canceled.
   bool canceled = 3;
 
-  reserved 4 to 19;
 }
 
 // Active sandbox runtime details (admin view).
@@ -78,7 +74,6 @@ message AdminSandboxRuntimeInfo {
   // Planned close timestamp if shutdown is scheduled.
   google.protobuf.Timestamp closes_at_utc = 7;
 
-  reserved 8 to 19;
 }
 
 // Pending sandbox activation/deactivation operation (admin view).
@@ -91,7 +86,6 @@ message AdminPendingSandboxOperation {
   // UTC timestamp when pending operation will execute.
   google.protobuf.Timestamp execute_at_utc = 3;
 
-  reserved 4 to 19;
 }
 
 // Admin runtime data for sandbox activity mode.
@@ -102,7 +96,6 @@ message AdminSandboxRuntimeMode {
   // Max one entry per sandbox_id.
   repeated AdminPendingSandboxOperation pending_sandbox_operations = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin view of official race staging phase.
@@ -112,7 +105,6 @@ message AdminOfficialRaceStagingState {
   // Total number of participants expected to join this race.
   uint32 expected_player_count = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin view of official race countdown phase.
@@ -120,7 +112,6 @@ message AdminOfficialRaceCountdownState {
   // UTC timestamp when countdown ends and race enters running phase.
   google.protobuf.Timestamp countdown_end_at_utc = 1;
 
-  reserved 2 to 19;
 }
 
 // Admin view of official race running phase.
@@ -128,17 +119,14 @@ message AdminOfficialRaceRunningState {
   // Planned UTC datetime when running phase should end.
   google.protobuf.Timestamp planned_end_at_utc = 1;
 
-  reserved 2 to 19;
 }
 
 // Admin view of official race finished phase.
 message AdminOfficialRaceFinishedState {
-  reserved 1 to 19;
 }
 
 // Admin view of official race aborted phase.
 message AdminOfficialRaceAbortedState {
-  reserved 1 to 19;
 }
 
 // Active official race runtime details (admin view).
@@ -167,7 +155,6 @@ message AdminOfficialRaceRuntimeInfo {
     AdminOfficialRaceAbortedState aborted = 10;
   }
 
-  reserved 11 to 19;
 }
 
 // Runtime state of activity mode and active sandboxes (admin view).
@@ -185,12 +172,10 @@ message AdminRuntimeState {
     AdminSandboxRuntimeMode sandbox_mode = 7;
   }
 
-  reserved 8 to 19;
 }
 
 // Request current runtime state (admin/internal).
 message GetAdminRuntimeStateRequest {
-  reserved 1 to 19;
 }
 
 // Response with current runtime state (admin/internal).
@@ -198,7 +183,6 @@ message GetAdminRuntimeStateResponse {
   // Current runtime state snapshot.
   AdminRuntimeState state = 1;
 
-  reserved 2 to 19;
 }
 
 // Admin request to start official race countdown.
@@ -211,7 +195,6 @@ message StartOfficialRaceCountdownRequest {
   // Can be used only when active race state is staging.
   uint32 countdown_seconds = 3;
 
-  reserved 4 to 19;
 }
 
 // Official race countdown start response.
@@ -223,7 +206,6 @@ message StartOfficialRaceCountdownResponse {
   // UTC timestamp when countdown ends and race enters running phase.
   google.protobuf.Timestamp countdown_end_at_utc = 3;
 
-  reserved 4 to 19;
 }
 
 // Admin request to close ended official race session.
@@ -234,7 +216,6 @@ message CloseOfficialRaceSessionRequest {
   // Can be used only when active race state is finished or aborted.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Official race session close response.
@@ -244,7 +225,6 @@ message CloseOfficialRaceSessionResponse {
   // Closed official race identifier.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin request to abort running official race session.
@@ -255,7 +235,6 @@ message AbortOfficialRaceRequest {
   // Can be used only when active race state is running.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Official race abort response.
@@ -265,7 +244,6 @@ message AbortOfficialRaceResponse {
   // Aborted official race identifier.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin API for runtime controls.

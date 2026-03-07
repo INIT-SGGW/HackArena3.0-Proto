@@ -24,7 +24,6 @@ message TrackData {
   // - arc length wraps every lap: s == lap_length_m is equivalent to s == 0.
   repeated CenterlineSample centerline_samples = 3;
 
-  reserved 4 to 19;
 }
 
 // Centerline sample with local frame and derived geometry.
@@ -62,7 +61,6 @@ message CenterlineSample {
   // Positive when the right side of the track is lower.
   float bank_rad = 10;
 
-  reserved 11 to 19;
 }
 
 // Request for static centerline geometry used by wrappers and bot clients.
@@ -70,14 +68,12 @@ message GetTrackDataRequest {
   // Track identifier.
   string map_id = 1;
 
-  reserved 2 to 19;
 }
 
 // Response with static centerline geometry.
 message GetTrackDataResponse {
   TrackData track = 1;
 
-  reserved 2 to 19;
 }
 
 // API for machine-readable track geometry used by wrappers and bot clients.

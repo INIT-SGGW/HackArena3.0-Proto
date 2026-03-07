@@ -43,5 +43,4 @@ message GhostModeSettings {
   // Any vehicle overlap keeps ghost mode enabled.
   uint32 vehicle_overlap_exit_delay_ms = 7;
 
-  reserved 8 to 19;
 }

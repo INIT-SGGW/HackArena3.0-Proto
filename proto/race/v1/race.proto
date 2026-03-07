@@ -35,7 +35,6 @@ message QuickJoinDevRequest {
   // Target active sandbox identifier to join.
   string sandbox_id = 1;
 
-  reserved 2 to 19;
 }
 
 // Development-only quick join response with assigned participant vehicle data.
@@ -45,7 +44,6 @@ message QuickJoinDevResponse {
   // Map identifier of the joined sandbox session.
   string map_id = 2;
 
-  reserved 3 to 19;
 }
 
 message SetControlsRequest {
@@ -60,7 +58,6 @@ message SetControlsRequest {
   // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
   float steering = 4;
 
-  reserved 5 to 19;
 }
 
 message SetControlsResponse {
@@ -72,7 +69,6 @@ message SetControlsResponse {
 
   uint64 applies_from_tick = 5;
 
-  reserved 6 to 19;
 }
 
 message SetControlsDevRequest {
@@ -89,7 +85,6 @@ message SetControlsDevRequest {
 
   uint64 target_car_id = 5;
 
-  reserved 6 to 19;
 }
 
 message StreamSettings {
@@ -102,7 +97,6 @@ message StreamSettings {
 
   string map_id = 6;
 
-  reserved 7 to 19;
 }
 
 // Spectator target for streaming a specific active sandbox.
@@ -110,12 +104,10 @@ message SpectatorSandboxTarget {
   // Target active sandbox identifier.
   string sandbox_id = 1;
 
-  reserved 2 to 19;
 }
 
 // Spectator target for streaming the active official race.
 message SpectatorOfficialRaceTarget {
-  reserved 1 to 19;
 }
 
 // Request for frontend spectator stream configuration.
@@ -136,7 +128,6 @@ message GetFrontendSpectatorRequest {
   // Server may ignore this flag when caller is not authorized.
   bool include_debug = 5;
 
-  reserved 6 to 19;
 }
 
 message FrontendSpectatorEvent {
@@ -145,13 +136,11 @@ message FrontendSpectatorEvent {
     FrontendSpectatorSnapshot snapshot = 2;
   }
 
-  reserved 3 to 19;
 }
 
 message GetParticipantRaceRequest {
   uint32 requested_hz = 1;
 
-  reserved 2 to 19;
 }
 
 message ParticipantRaceEvent {
@@ -160,7 +149,6 @@ message ParticipantRaceEvent {
     ParticipantRaceSnapshot snapshot = 2;
   }
 
-  reserved 3 to 19;
 }
 
 service RaceService {

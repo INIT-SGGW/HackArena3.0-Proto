@@ -45,7 +45,6 @@ message SandboxConfigInput {
   // Ghost mode behavior.
   GhostModeSettings ghost_mode = 4;
 
-  reserved 5 to 19;
 }
 
 // Persisted sandbox configuration entry with backend-assigned identifier.
@@ -55,12 +54,10 @@ message SandboxConfig {
   // User-provided sandbox configuration fields.
   SandboxConfigInput config = 2;
 
-  reserved 3 to 19;
 }
 
 // Request for persisted sandbox configuration list.
 message GetSandboxConfigsRequest {
-  reserved 1 to 19;
 }
 
 // Response with persisted sandbox configuration list.
@@ -70,7 +67,6 @@ message GetSandboxConfigsResponse {
   // Configured sandboxes.
   repeated SandboxConfig sandboxes = 2;
 
-  reserved 3 to 19;
 }
 
 // Create single sandbox configuration entry.
@@ -80,7 +76,6 @@ message CreateSandboxConfigRequest {
   // New sandbox configuration payload.
   SandboxConfigInput config = 2;
 
-  reserved 3 to 19;
 }
 
 // Created sandbox configuration entry.
@@ -90,7 +85,6 @@ message CreateSandboxConfigResponse {
   // Created sandbox configuration entry.
   SandboxConfig sandbox = 2;
 
-  reserved 3 to 19;
 }
 
 // Update single sandbox configuration entry.
@@ -102,7 +96,6 @@ message UpdateSandboxConfigRequest {
   // New sandbox configuration payload.
   SandboxConfigInput config = 3;
 
-  reserved 4 to 19;
 }
 
 // Updated sandbox configuration entry.
@@ -112,7 +105,6 @@ message UpdateSandboxConfigResponse {
   // Updated sandbox configuration entry.
   SandboxConfig sandbox = 2;
 
-  reserved 3 to 19;
 }
 
 // Delete single sandbox configuration entry.
@@ -122,7 +114,6 @@ message DeleteSandboxConfigRequest {
   // Target sandbox identifier to delete.
   string sandbox_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Delete confirmation.
@@ -132,7 +123,6 @@ message DeleteSandboxConfigResponse {
   // Deleted sandbox identifier.
   string sandbox_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin request for time-of-day preset update in sandbox configuration.
@@ -144,7 +134,6 @@ message UpdateSandboxTimeOfDayRequest {
   // New default in-game time-of-day preset for target sandbox.
   RuntimeTimeOfDayPreset preset = 3;
 
-  reserved 4 to 19;
 }
 
 // Time-of-day preset update response.
@@ -160,7 +149,6 @@ message UpdateSandboxTimeOfDayResponse {
   // true if update was also applied to currently active runtime sandbox instance.
   bool applied_to_active_runtime = 5;
 
-  reserved 6 to 19;
 }
 
 // Race configuration payload provided by admin tools.
@@ -180,7 +168,6 @@ message RaceConfigInput {
   // In-game time-of-day preset.
   RaceTimeOfDayPreset time_of_day_preset = 7;
 
-  reserved 8 to 19;
 }
 
 // Persisted race configuration entry with backend-assigned identifier.
@@ -190,12 +177,10 @@ message RaceConfig {
   // User-provided race configuration fields.
   RaceConfigInput config = 2;
 
-  reserved 3 to 19;
 }
 
 // Request for persisted race configuration schedule.
 message GetRaceConfigsRequest {
-  reserved 1 to 19;
 }
 
 // Response with persisted race configuration schedule.
@@ -205,7 +190,6 @@ message GetRaceConfigsResponse {
   // Entries should be sorted by start_time_utc ascending and have unique race_id.
   repeated RaceConfig races = 2;
 
-  reserved 3 to 19;
 }
 
 // Create single race configuration entry.
@@ -215,7 +199,6 @@ message CreateRaceConfigRequest {
   // New race configuration payload.
   RaceConfigInput config = 2;
 
-  reserved 3 to 19;
 }
 
 // Created race configuration entry.
@@ -225,7 +208,6 @@ message CreateRaceConfigResponse {
   // Created race configuration entry.
   RaceConfig race = 2;
 
-  reserved 3 to 19;
 }
 
 // Update single race configuration entry.
@@ -238,7 +220,6 @@ message UpdateRaceConfigRequest {
   // Active race cannot be updated.
   RaceConfigInput config = 3;
 
-  reserved 4 to 19;
 }
 
 // Updated race configuration entry.
@@ -248,7 +229,6 @@ message UpdateRaceConfigResponse {
   // Updated race configuration entry.
   RaceConfig race = 2;
 
-  reserved 3 to 19;
 }
 
 // Delete single race configuration entry.
@@ -259,7 +239,6 @@ message DeleteRaceConfigRequest {
   // Active race cannot be deleted.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Delete confirmation.
@@ -269,7 +248,6 @@ message DeleteRaceConfigResponse {
   // Deleted race identifier.
   string race_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin API for sandbox configuration management.

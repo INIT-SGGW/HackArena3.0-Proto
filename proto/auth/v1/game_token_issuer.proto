@@ -13,7 +13,6 @@ message IssueTeamBotTokenRequest {
   // - TeamBotTokenClaims.team_id
   string team_id = 1;
 
-  reserved 2 to 19;
 }
 
 // Issue TeamBot development token request.
@@ -25,7 +24,6 @@ message IssueTeamBotDevTokenRequest {
   // Local runtime instance identifier.
   string instance_uuid = 3;
 
-  reserved 4 to 19;
 }
 
 // Issue global spectator token request.
@@ -33,7 +31,6 @@ message IssueSpectatorTokenRequest {
   // User id (UUID) used as standard.sub.
   string user_id = 1;
 
-  reserved 2 to 19;
 }
 
 // Issue team spectator token request.
@@ -43,7 +40,6 @@ message IssueTeamSpectatorTokenRequest {
   // Team id (UUID) used as TeamSpectatorTokenClaims.team_id.
   string team_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Issue team spectator development token request.
@@ -53,14 +49,12 @@ message IssueTeamDevSpectatorTokenRequest {
   // Team id (UUID) used as TeamDevSpectatorTokenClaims.team_id.
   string team_id = 2;
 
-  reserved 3 to 19;
 }
 
 // Generic token issue response.
 message IssueGameTokenResponse {
   SignedGameToken token = 1;
 
-  reserved 2 to 19;
 }
 
 // Auth API for issuing game tokens.

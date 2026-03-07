@@ -14,7 +14,6 @@ message TrackMeta {
     uint64 size_bytes = 3;
     bytes content_hash = 4;
 
-    reserved 5 to 19;
 }
 
 // Catalog entry shown in admin/frontend map pickers.
@@ -22,19 +21,16 @@ message MapCatalogEntry {
     string map_id = 1;
     string display_name = 2;
 
-    reserved 3 to 19;
 }
 
 // Request for available maps in catalog.
 message ListMapsRequest {
-    reserved 1 to 19;
 }
 
 // Response with maps available for race configuration.
 message ListMapsResponse {
     repeated MapCatalogEntry maps = 1;
 
-    reserved 2 to 19;
 }
 
 message GetTrackMetaRequest {

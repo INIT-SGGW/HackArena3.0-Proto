@@ -34,7 +34,6 @@ message ForecastPoint {
   // Air temperature in Celsius degrees.
   int32 temperature_c = 4;
 
-  reserved 5 to 19;
 }
 
 // Current weather snapshot.
@@ -43,7 +42,6 @@ message WeatherNow {
   // Air temperature in Celsius degrees.
   int32 temperature_c = 2;
 
-  reserved 3 to 19;
 }
 
 // Forecast specification for explicit start time.
@@ -56,7 +54,6 @@ message ForecastSpecAtTime {
   // Optional deterministic seed for reproducible results.
   optional uint64 seed = 4;
 
-  reserved 5 to 19;
 }
 
 // Forecast specification "from now".
@@ -64,7 +61,6 @@ message ForecastSpecNow {
   // Preset defining forecast horizon and time step.
   ForecastPreset preset = 1;
 
-  reserved 2 to 19;
 }
 
 // Public forecast request. Backend computes forecast from current server time.
@@ -72,14 +68,12 @@ message GetForecastNowRequest {
   // Forecast parameters.
   ForecastSpecNow spec = 1;
 
-  reserved 2 to 19;
 }
 
 // Public forecast response.
 message GetForecastNowResponse {
   repeated ForecastPoint points = 1;
 
-  reserved 2 to 19;
 }
 
 // Public stream request for forecast updates.
@@ -87,38 +81,32 @@ message StreamForecastUpdatesRequest {
   // Forecast parameters.
   ForecastSpecNow spec = 1;
 
-  reserved 2 to 19;
 }
 
 // Forecast update event pushed by backend when effective forecast changes.
 message ForecastUpdateEvent {
   repeated ForecastPoint points = 1;
 
-  reserved 2 to 19;
 }
 
 // Public request for current weather state.
 message GetWeatherNowRequest {
-  reserved 1 to 19;
 }
 
 // Public response with current weather state.
 message GetWeatherNowResponse {
   WeatherNow now = 1;
 
-  reserved 2 to 19;
 }
 
 // Public stream request for current weather updates.
 message StreamWeatherUpdatesRequest {
-  reserved 1 to 19;
 }
 
 // Current weather update event pushed by backend when effective weather changes.
 message WeatherUpdateEvent {
   WeatherNow now = 1;
 
-  reserved 2 to 19;
 }
 
 // Global weather schedule entry used by admin API.
@@ -127,12 +115,10 @@ message WeatherScheduleEntry {
   google.protobuf.Timestamp from = 1;
   WeatherType type = 2;
 
-  reserved 4 to 19;
 }
 
 // Admin request to read persisted global schedule.
 message GetWeatherScheduleRequest {
-  reserved 1 to 19;
 }
 
 // Admin response with persisted global schedule.
@@ -140,7 +126,6 @@ message GetWeatherScheduleResponse {
   // Entries must be sorted by "from" ascending and contain no duplicate timestamps.
   repeated WeatherScheduleEntry entries = 1;
 
-  reserved 2 to 19;
 }
 
 // Full replacement of schedule data.
@@ -148,12 +133,10 @@ message ReplaceWeatherScheduleRequest {
   // Full replacement payload. Entries must be sorted by "from" ascending and contain no duplicate timestamps.
   repeated WeatherScheduleEntry entries = 1;
 
-  reserved 2 to 19;
 }
 
 // Empty admin response returned after successful schedule replacement.
 message ReplaceWeatherScheduleResponse {
-  reserved 1 to 19;
 }
 
 // Simulate forecast for temporary schedule sent by frontend without persisting it.
@@ -163,14 +146,12 @@ message SimulateForecastRequest {
   // Simulation spec with explicit start time.
   ForecastSpecAtTime spec = 2;
 
-  reserved 3 to 19;
 }
 
 // Admin simulation response. No persisted data is modified.
 message SimulateForecastResponse {
   repeated ForecastPoint points = 1;
 
-  reserved 2 to 19;
 }
 
 // Public read API for frontend/bots/spectators.

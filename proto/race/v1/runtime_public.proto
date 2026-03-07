@@ -23,7 +23,6 @@ message PublicSandboxRuntimeInfo {
   // Number of currently connected players in this sandbox.
   uint32 active_player_count = 6;
 
-  reserved 7 to 19;
 }
 
 // Public view of official race staging phase.
@@ -33,7 +32,6 @@ message PublicOfficialRaceStagingState {
   // Total number of participants expected to join this race.
   uint32 expected_player_count = 2;
 
-  reserved 3 to 19;
 }
 
 // Public view of official race countdown phase.
@@ -41,7 +39,6 @@ message PublicOfficialRaceCountdownState {
   // UTC timestamp when countdown ends and race enters running phase.
   google.protobuf.Timestamp countdown_end_at_utc = 1;
 
-  reserved 2 to 19;
 }
 
 // Public view of official race running state.
@@ -49,17 +46,14 @@ message PublicOfficialRaceRunningState {
   // Planned UTC datetime when running phase should end.
   google.protobuf.Timestamp planned_end_at_utc = 1;
 
-  reserved 2 to 19;
 }
 
 // Public view of official race finished state.
 message PublicOfficialRaceFinishedState {
-  reserved 1 to 19;
 }
 
 // Public view of official race aborted state.
 message PublicOfficialRaceAbortedState {
-  reserved 1 to 19;
 }
 
 // Public view of active official race runtime.
@@ -86,7 +80,6 @@ message PublicOfficialRaceRuntimeInfo {
     PublicOfficialRaceAbortedState aborted = 9;
   }
 
-  reserved 10 to 19;
 }
 
 // Public summary entry for an upcoming race.
@@ -98,7 +91,6 @@ message PublicUpcomingRaceSummary {
   // Configured race duration in seconds, counted from running phase start.
   uint32 race_duration_sec = 3;
 
-  reserved 4 to 19;
 }
 
 // Public runtime data for sandbox activity mode.
@@ -106,7 +98,6 @@ message PublicSandboxRuntimeMode {
   // Active sandboxes for sandbox activity mode.
   repeated PublicSandboxRuntimeInfo sandboxes = 1;
 
-  reserved 2 to 19;
 }
 
 // Public runtime state for menu rendering.
@@ -122,7 +113,6 @@ message PublicRuntimeState {
     PublicSandboxRuntimeMode sandbox_mode = 5;
   }
 
-  reserved 6 to 19;
 }
 
 // Public menu state for sandbox/runtime information panels.
@@ -132,12 +122,10 @@ message PublicMenuState {
   // Upcoming races in backend-defined upcoming window.
   repeated PublicUpcomingRaceSummary upcoming_races = 2;
 
-  reserved 3 to 19;
 }
 
 // Public request for current menu state.
 message GetPublicMenuStateRequest {
-  reserved 1 to 19;
 }
 
 // Public response with full menu snapshot.
@@ -145,12 +133,10 @@ message GetPublicMenuStateResponse {
   // Current public menu state snapshot.
   PublicMenuState state = 1;
 
-  reserved 2 to 19;
 }
 
 // Public stream request for state changes.
 message StreamPublicMenuStateRequest {
-  reserved 1 to 19;
 }
 
 // Public-facing API for runtime menu rendering.

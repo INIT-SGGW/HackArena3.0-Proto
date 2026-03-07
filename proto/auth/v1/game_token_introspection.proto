@@ -26,7 +26,6 @@ message IntrospectGameTokenRequest {
   // Compact JWT string encoded as header.payload.signature.
   string jwt = 1;
 
-  reserved 2 to 19;
 }
 
 // Token introspection result.
@@ -44,7 +43,6 @@ message IntrospectGameTokenResponse {
   // Debug-only detail for logs/diagnostics; not intended for end users.
   string inactive_reason_debug = 5;
 
-  reserved 6 to 19;
 }
 
 // Auth API for validating and decoding game tokens.

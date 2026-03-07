@@ -10,7 +10,6 @@ message Vector3 {
   float y = 2;
   float z = 3;
 
-  reserved 4 to 19;
 }
 
 // Unit quaternion representing orientation.
@@ -20,7 +19,6 @@ message Quaternion {
   float z = 3;
   float w = 4;
 
-  reserved 5 to 19;
 }
 
 // Front wheel steering angles in radians.
@@ -28,7 +26,6 @@ message WheelAngles {
   float front_left_rad = 1;
   float front_right_rad = 2;
 
-  reserved 3 to 19;
 }
 
 // Wheel angular speeds in radians per second.
@@ -38,5 +35,4 @@ message WheelSpeeds {
   float rear_left_radps = 3;
   float rear_right_radps = 4;
   
-  reserved 5 to 19;
 }
