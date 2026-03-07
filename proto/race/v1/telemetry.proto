@@ -44,14 +44,25 @@ message FrontendCarFullState {
   reserved 5 to 19;
 }
 
+// Optional debug-only telemetry for spectator snapshot.
+message FrontendSpectatorDebugInfo {
+  // Engine-reported race elapsed time in seconds from boink_get_race_duration().
+  // Uses engine Real precision (float); best-effort and non-authoritative for UI/gameplay logic.
+  float engine_race_elapsed_sec = 1;
+
+  reserved 2 to 19;
+}
+
 // Spectator feed: full state for all cars.
 message FrontendSpectatorSnapshot {
   uint64 tick = 1;
   // Milliseconds since Unix epoch (UTC).
   uint64 server_time_ms = 2;
   repeated FrontendCarFullState cars = 3;
+  // Optional debug-only telemetry block.
+  FrontendSpectatorDebugInfo debug = 4;
 
-  reserved 4 to 19;
+  reserved 5 to 19;
 }
 
 // Participant view of own car (full driver detail).

@@ -118,6 +118,7 @@ message SpectatorOfficialRaceTarget {
   reserved 1 to 19;
 }
 
+// Request for frontend spectator stream configuration.
 message GetFrontendSpectatorRequest {
   // Requested stream frequency for spectator updates.
   uint32 requested_hz = 1;
@@ -131,8 +132,11 @@ message GetFrontendSpectatorRequest {
     // Stream the active official race.
     SpectatorOfficialRaceTarget official_race = 4;
   }
+  // Requests optional debug telemetry in spectator snapshots.
+  // Server may ignore this flag when caller is not authorized.
+  bool include_debug = 5;
 
-  reserved 5 to 19;
+  reserved 6 to 19;
 }
 
 message FrontendSpectatorEvent {
