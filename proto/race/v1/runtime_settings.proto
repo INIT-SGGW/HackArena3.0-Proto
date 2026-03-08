@@ -25,7 +25,7 @@ enum RuntimeTimeOfDayPreset {
 // Exit conditions (AND):
 // - speed > exit_speed_min_mps for at least exit_delay_ms
 // - completed_laps >= until_completed_laps
-// - no vehicle overlap for at least vehicle_overlap_exit_delay_ms
+// - no vehicle overlap for this vehicle for at least vehicle_overlap_exit_delay_ms
 message GhostModeSettings {
   // Enables/disables ghost mode logic.
   bool enabled = 1;
@@ -41,6 +41,7 @@ message GhostModeSettings {
   uint32 until_completed_laps = 6;
   // Required no-overlap time before ghost mode may be disabled.
   // Any vehicle overlap keeps ghost mode enabled.
+  // Evaluated per vehicle against that vehicle's current overlaps (not globally).
   uint32 vehicle_overlap_exit_delay_ms = 7;
 
 }

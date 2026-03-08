@@ -6,6 +6,53 @@ option csharp_namespace = "HA3.Proto.Race.V1";
 
 import "race/v1/common.proto";
 
+// High-level ghost mode phase used by clients for UX state rendering.
+enum GhostModePhase {
+  GHOST_MODE_PHASE_UNSPECIFIED = 0;
+  // Ghost mode is disabled for this vehicle and collisions are enabled.
+  GHOST_MODE_PHASE_INACTIVE = 1;
+  // Ghost mode is enabled for this vehicle and collisions are disabled.
+  GHOST_MODE_PHASE_ACTIVE = 2;
+  // Ghost mode is still active, but exit countdown is currently running.
+  GHOST_MODE_PHASE_PENDING_EXIT = 3;
+}
+
+// Active conditions that currently keep or can keep a vehicle in ghost mode.
+enum GhostModeBlocker {
+  GHOST_MODE_BLOCKER_UNSPECIFIED = 0;
+  // completed_laps is below GhostModeSettings.until_completed_laps.
+  GHOST_MODE_BLOCKER_LAPS_REQUIREMENT_NOT_MET = 1;
+  // Current speed is not above GhostModeSettings.exit_speed_min_mps.
+  GHOST_MODE_BLOCKER_EXIT_SPEED_NOT_MET = 2;
+  // Exit speed condition is met, but exit delay is still counting down.
+  GHOST_MODE_BLOCKER_EXIT_DELAY_RUNNING = 3;
+  // Vehicle overlap is currently present and prevents ghost mode exit.
+  // Evaluated per vehicle, not as a single global race flag.
+  GHOST_MODE_BLOCKER_VEHICLE_OVERLAP_ACTIVE = 4;
+  // Overlap is cleared for this vehicle, but no-overlap exit delay is still counting down.
+  // Evaluated per vehicle, not as a single global race flag.
+  GHOST_MODE_BLOCKER_OVERLAP_EXIT_DELAY_RUNNING = 5;
+}
+
+// Runtime ghost mode state for a single vehicle.
+// Pairwise collision rule:
+// can_collide_pair(A,B) = A.can_collide_now && B.can_collide_now.
+message GhostModeState {
+  // Authoritative collision flag for this vehicle.
+  // Clients should use this as the only gameplay truth for collision checks.
+  bool can_collide_now = 1;
+  // Current high-level ghost mode phase for UX/debug.
+  // Do not infer collision enablement from phase; use can_collide_now.
+  // PENDING_EXIT remains non-collidable until transition to INACTIVE.
+  GhostModePhase phase = 2;
+  // Active blockers at current tick. May contain multiple values.
+  repeated GhostModeBlocker blockers = 3;
+  // Aggregated remaining time to ghost-mode exit in milliseconds.
+  // Should be > 0 only when phase is PENDING_EXIT.
+  uint32 exit_delay_remaining_ms = 4;
+
+}
+
 // Core pose data shared across views.
 message CarKinematics {
   Vector3 position = 1;
@@ -22,6 +69,8 @@ message CarParticipantState {
   float throttle_applied = 5;
   float brake_applied = 6;
   WheelAngles wheel_angles = 7;
+  // Runtime ghost mode state for this vehicle.
+  GhostModeState ghost_mode = 8;
 
 }
 
@@ -71,6 +120,8 @@ message ParticipantSelfState {
 message ParticipantOpponentState {
   uint64 car_id = 1;
   CarKinematics kinematics = 2;
+  // Runtime ghost mode state for this opponent vehicle.
+  GhostModeState ghost_mode = 3;
 
 }
 
