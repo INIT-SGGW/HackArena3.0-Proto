@@ -32,6 +32,8 @@ enum GhostModeBlocker {
   // Overlap is cleared for this vehicle, but no-overlap exit delay is still counting down.
   // Evaluated per vehicle, not as a single global race flag.
   GHOST_MODE_BLOCKER_OVERLAP_EXIT_DELAY_RUNNING = 5;
+  // Vehicle is currently in pit area.
+  GHOST_MODE_BLOCKER_IN_PIT = 6;
 }
 
 // Runtime ghost mode state for a single vehicle.
