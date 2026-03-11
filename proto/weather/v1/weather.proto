@@ -63,6 +63,27 @@ message ForecastSpecNow {
 
 }
 
+// Weather target for a specific active sandbox session.
+message WeatherSandboxTarget {
+  // Target active sandbox identifier.
+  string sandbox_id = 1;
+
+}
+
+// Weather target for active official race session.
+message WeatherOfficialRaceTarget {
+}
+
+// Explicit weather source target.
+// Exactly one target must be set.
+message WeatherTarget {
+  oneof target {
+    WeatherOfficialRaceTarget official_race = 1;
+    WeatherSandboxTarget sandbox = 2;
+  }
+
+}
+
 // Public forecast request. Backend computes forecast from current server time.
 message GetForecastNowRequest {
   // Forecast parameters.
@@ -91,6 +112,9 @@ message ForecastUpdateEvent {
 
 // Public request for current weather state.
 message GetWeatherNowRequest {
+  // Required weather target.
+  // Request must include exactly one target; otherwise it is rejected.
+  WeatherTarget target = 1;
 }
 
 // Public response with current weather state.
@@ -101,6 +125,9 @@ message GetWeatherNowResponse {
 
 // Public stream request for current weather updates.
 message StreamWeatherUpdatesRequest {
+  // Required weather target.
+  // Request must include exactly one target; otherwise it is rejected.
+  WeatherTarget target = 1;
 }
 
 // Current weather update event pushed by backend when effective weather changes.
