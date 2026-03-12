@@ -78,6 +78,8 @@ message RaceTableEntry {
   // DNF is meaningful for official race tables.
   // For other target types, status should be ACTIVE.
   RaceTableEntryStatus status = 7;
+  // Vehicle identifier represented by this table row.
+  uint64 car_id = 8;
 
 }
 
