@@ -49,8 +49,19 @@ message MinimapMetadata {
 
 }
 
+// Typed map metadata used by UI and lobby views.
+message MapMetadata {
+  // Track identifier.
+  string map_id = 1;
+  // Human-readable map name.
+  string map_name = 2;
+  // Full track length in meters.
+  float total_length_m = 3;
+
+}
+
 // Full map asset bundle metadata for frontend bootstrap.
-// Required: main_glb, minimap_svg, minimap_metadata.
+// Required: main_glb, minimap_svg, minimap_metadata, map_metadata.
 // Optional: animation_glb.
 message MapAssetBundleMeta {
   string map_id = 1;
@@ -58,6 +69,7 @@ message MapAssetBundleMeta {
   MapAssetMeta animation_glb = 3;
   MapAssetMeta minimap_svg = 4;
   MinimapMetadata minimap_metadata = 5;
+  MapMetadata map_metadata = 6;
 
 }
 
