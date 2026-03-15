@@ -69,8 +69,7 @@ message RaceTableEntry {
     TeamIdentity team = 3;
   }
   // Time gap to current leader in milliseconds.
-  // Leader row uses value 0.
-  uint32 gap_to_leader_ms = 4;
+  optional uint32 gap_to_leader_ms = 4;
   // Number of laps behind leader.
   uint32 laps_behind = 5;
   // True when entry vehicle is currently in pit.
