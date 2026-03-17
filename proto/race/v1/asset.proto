@@ -1,6 +1,8 @@
 syntax = "proto3";
 package race.v1;
 
+import "race/v1/common.proto";
+
 option csharp_namespace = "HA3.Proto.Race.V1";
 
 // MIME types supported by map assets.
@@ -49,6 +51,23 @@ message MinimapMetadata {
 
 }
 
+// Typed helicopter-view orbit metadata used by frontend overlays.
+message HelicopterViewMetadata {
+  // Ellipse center in world coordinates (XZ plane is used for orbit).
+  Vector3 ellipse_center_world = 1;
+  // Ellipse semi-axis length along local X in meters.
+  float ellipse_semi_axis_x_m = 2;
+  // Ellipse semi-axis length along local Z in meters.
+  float ellipse_semi_axis_z_m = 3;
+  // Ellipse rotation around Y axis in radians.
+  float ellipse_rotation_rad = 4;
+  // Desired lead/lag arc offset in meters when car movement is toward helicopter.
+  float desired_arc_offset_towards_m = 5;
+  // Desired lead/lag arc offset in meters when car movement is away from helicopter.
+  float desired_arc_offset_away_m = 6;
+
+}
+
 // Typed map metadata used by UI and lobby views.
 message MapMetadata {
   // Track identifier.
@@ -57,6 +76,10 @@ message MapMetadata {
   string map_name = 2;
   // Full track length in meters.
   float total_length_m = 3;
+  // World-space anchor positions used by follow-camera mode.
+  repeated Vector3 follow_camera_anchor_positions = 4;
+  // Helicopter-view orbit configuration.
+  HelicopterViewMetadata helicopter_view = 5;
 
 }
 
@@ -126,11 +149,12 @@ message GetMapAssetResponse {
 
 }
 
+// Query API for map asset discovery and chunked asset download.
 service AssetService {
-  // Returns map catalog entries used by race configuration UIs.
+  // Lists maps available for selection in UI/configuration.
   rpc ListMaps(ListMapsRequest) returns (ListMapsResponse);
-  // Returns metadata for full frontend map asset bundle.
+  // Returns typed bundle metadata and file descriptors for a selected map.
   rpc GetMapAssetBundleMeta(GetMapAssetBundleMetaRequest) returns (GetMapAssetBundleMetaResponse);
-  // Streams requested map asset using chunked transfer.
+  // Streams raw bytes of a selected map asset in chunks.
   rpc GetMapAsset(GetMapAssetRequest) returns (stream GetMapAssetResponse);
 }
