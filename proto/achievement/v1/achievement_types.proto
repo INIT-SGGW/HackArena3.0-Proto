@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package achievement.v1;
+
+import "race/v1/common.proto";
+
+option csharp_namespace = "HA3.Proto.Achievement.V1";
+
+// Installed tire type for a vehicle.
+enum AchievementTireType {
+  ACHIEVEMENT_TIRE_TYPE_UNSPECIFIED = 0;
+  ACHIEVEMENT_TIRE_TYPE_HARD = 1;
+  ACHIEVEMENT_TIRE_TYPE_SOFT = 2;
+  ACHIEVEMENT_TIRE_TYPE_WET = 3;
+}
+
+// Per-wheel tire wear values normalized to range [0.0, 1.0].
+message AchievementTireWearPerWheel {
+  float front_left = 1;
+  float front_right = 2;
+  float rear_left = 3;
+  float rear_right = 4;
+
+}
+
+// Per-wheel world-space positions.
+message AchievementWheelPositions {
+  race.v1.Vector3 front_left = 1;
+  race.v1.Vector3 front_right = 2;
+  race.v1.Vector3 rear_left = 3;
+  race.v1.Vector3 rear_right = 4;
+
+}
+
+// Per-vehicle state used by achievement evaluation.
+message AchievementVehicleState {
+  uint64 car_id = 1;
+  // Team identifier represented by this vehicle.
+  string team_id = 2;
+  race.v1.Vector3 position = 3;
+  race.v1.Quaternion orientation = 4;
+  uint32 completed_laps = 5;
+  // Scalar speed magnitude in meters per second.
+  float speed_mps = 6;
+  // 1-based race classification position.
+  uint32 race_position = 7;
+  // Current gearbox gear index.
+  // Convention:
+  // - -1: reverse
+  // - 0: neutral
+  // - 1..8: forward gears
+  int32 gear = 8;
+  // Installed tire type.
+  AchievementTireType tire_type = 9;
+  // Tire wear per wheel, normalized to [0.0, 1.0].
+  AchievementTireWearPerWheel tire_wear = 10;
+  // Wheel world-space positions.
+  AchievementWheelPositions wheel_positions = 11;
+  // Alignment of vehicle forward vector to nearest centerline tangent.
+  // Value range is [-1.0, 1.0].
+  float forward_alignment_to_centerline = 12;
+  // Signed speed projected onto nearest centerline tangent in m/s.
+  // Positive means forward track progress, negative means reverse progress.
+  float signed_speed_along_centerline_mps = 13;
+
+}
