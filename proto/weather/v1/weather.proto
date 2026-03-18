@@ -141,6 +141,8 @@ message WeatherScheduleEntry {
   // Start time of this segment (UTC). Segment lasts until next "from".
   google.protobuf.Timestamp from = 1;
   WeatherType type = 2;
+  // Air temperature in Celsius degrees for this schedule segment.
+  int32 temperature_c = 3;
 
 }
 
