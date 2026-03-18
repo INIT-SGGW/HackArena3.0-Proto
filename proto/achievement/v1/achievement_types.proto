@@ -64,3 +64,56 @@ message AchievementVehicleState {
   float signed_speed_along_centerline_mps = 13;
 
 }
+
+enum AchievementAvailability {
+  ACHIEVEMENT_AVAILABILITY_UNSPECIFIED = 0;
+  ACHIEVEMENT_AVAILABILITY_RACE = 1;
+  ACHIEVEMENT_AVAILABILITY_SANDBOX = 2;
+  ACHIEVEMENT_AVAILABILITY_BOTH = 3;
+}
+
+enum AchievementVisibility {
+  ACHIEVEMENT_VISIBILITY_UNSPECIFIED = 0;
+  ACHIEVEMENT_VISIBILITY_PUBLIC = 1;
+  ACHIEVEMENT_VISIBILITY_SECRET = 2;
+}
+
+message ConditionalAchievementRepresentation {
+	string achievement_id = 1;
+	// Achievement name.
+	string name = 2;
+	// Achievement description.
+	string description = 3;
+	// Achievement image path.
+	string image_path = 4;
+	// Achevement availability where it can be granted.
+	AchievementAvailability availability = 5;
+	// Achevement visibility.
+	AchievementVisibility visibility = 6;
+	// Is Achevement achieved by team. (default: false)
+	bool is_achieved = 7;
+}
+
+message NumericAchievementRepresentation {
+	string achievement_id = 1;
+	// Achievement name.
+	string name = 2;
+	// Achievement description.
+	string description = 3;
+	// Achievement image path.
+	string image_path = 4;
+	// Achevement availability where it can be granted.
+	AchievementAvailability availability = 5;
+	// Achevement visibility.
+	AchievementVisibility visibility = 6;
+	// Is Achevement achieved by team. (default: false)
+	bool is_achieved = 7;
+	// Current achieved value of achievement.
+	int32 current_value = 8;
+	// Target value when achievement is granted.
+	int32 target_value = 9;
+	// Unit of current_value and target_value.
+	string unit = 10;
+	// Progress percentage (0 - 100 inclusive).
+	int32 progress = 11;
+}

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package achievement.v1;
+
+import "achievement/v1/achievement_types.proto";
+
+option csharp_namespace = "HA3.Proto.Achievement.V1";
+
+// Information about specific achievement.
+message AchievementRepresentation {
+	oneof representation {
+		// Representation of conditional achievement.
+		ConditionalAchievementRepresentation conditional = 1;
+		// Representation of numeric achievement.
+		NumericAchievementRepresentation numeric = 2;
+	}
+
+}
+
+// Request for achievement collection.
+message GetAchievementsRequest{
+	// Specific team id to query achievements for.
+	string team_id = 1;
+
+}
+
+// Response envelope for achievement collection.
+message GetAchievementsResponse{
+	// List of achievement representation.
+	repeated AchievementRepresentation achievements = 1;
+
+}
+
+
+// Api for achievement fetching.
+service AchievementService {
+	// Gets all achievements for specific team_id.
+	// Returns both achieved and not achieved achievements.
+	// Secret achievement are hidden until achieved.
+	rpc GetAchievements(GetAchievementsRequest) returns (GetAchievementsResponse);
+}
