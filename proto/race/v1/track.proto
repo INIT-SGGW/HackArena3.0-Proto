@@ -23,6 +23,18 @@ message TrackData {
   // - closing segment wraps from last sample to first sample,
   // - arc length wraps every lap: s == lap_length_m is equivalent to s == 0.
   repeated CenterlineSample centerline_samples = 3;
+  // Pitstop centerline geometry split into enter/fix/exit sections.
+  PitstopData pitstop_data = 4;
+
+}
+
+// Pitstop centerline geometry split into enter/fix/exit sections.
+message PitstopData {
+  repeated CenterlineSample enter_centerline_samples = 1;
+  repeated CenterlineSample fix_centerline_samples = 2;
+  repeated CenterlineSample exit_centerline_samples = 3;
+  // Total arc length of full pitstop path (enter + fix + exit), in meters.
+  float length_m = 4;
 
 }
 

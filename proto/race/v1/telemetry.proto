@@ -36,6 +36,17 @@ enum GhostModeBlocker {
   GHOST_MODE_BLOCKER_IN_PIT = 6;
 }
 
+// Pitstop zones encoded as bit flags for pitstop_zone_flags.
+enum PitstopZoneFlag {
+  PITSTOP_ZONE_FLAG_UNSPECIFIED = 0;
+  // Bit 0 (1): vehicle overlaps pitstop enter zone.
+  PITSTOP_ZONE_FLAG_ENTER = 1;
+  // Bit 1 (2): vehicle overlaps pitstop fix zone.
+  PITSTOP_ZONE_FLAG_FIX = 2;
+  // Bit 2 (4): vehicle overlaps pitstop exit zone.
+  PITSTOP_ZONE_FLAG_EXIT = 4;
+}
+
 // Runtime ghost mode state for a single vehicle.
 // Pairwise collision rule:
 // can_collide_pair(A,B) = A.can_collide_now && B.can_collide_now.
@@ -70,15 +81,27 @@ message CarParticipantState {
   int32 gear = 4;
   float throttle_applied = 5;
   float brake_applied = 6;
-  WheelAngles wheel_angles = 7;
   // Runtime ghost mode state for this vehicle.
-  GhostModeState ghost_mode = 8;
+  GhostModeState ghost_mode = 7;
+  // Active pitstop zones encoded as PitstopZoneFlag bitmask.
+  // Bits:
+  // - ENTER = 1
+  // - FIX = 2
+  // - EXIT = 4
+  // Multiple flags may be set at the same time.
+  uint32 pitstop_zone_flags = 8;
+  // Number of wheels currently inside pitstop zones (range 0..4).
+  uint32 wheels_in_pitstop = 9;
 
 }
 
 // Minimal data needed for rendering visuals.
 message CarRenderState {
   WheelSpeeds wheel_speeds = 1;
+  // Front-left wheel orientation in radians.
+  float front_left_wheel_orientation_rad = 2;
+  // Front-right wheel orientation in radians.
+  float front_right_wheel_orientation_rad = 3;
 
 }
 
