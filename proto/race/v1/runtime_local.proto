@@ -239,6 +239,16 @@ message GetLocalRuntimeStateResponse {
 
 }
 
+// Stream request for local runtime state updates.
+message StreamLocalRuntimeStateRequest {
+}
+
+// Stream response with local runtime state snapshot.
+message StreamLocalRuntimeStateResponse {
+  LocalRuntimeState state = 1;
+
+}
+
 // Admin API for local-only sandbox configuration and runtime controls.
 service LocalSandboxAdminService {
   // Returns persisted local sandbox configuration list.
@@ -259,4 +269,6 @@ service LocalSandboxAdminService {
   rpc SetLocalSandboxActivation(SetLocalSandboxActivationRequest) returns (SetLocalSandboxActivationResponse);
   // Returns current local runtime state.
   rpc GetLocalRuntimeState(GetLocalRuntimeStateRequest) returns (GetLocalRuntimeStateResponse);
+  // Streams local runtime state: first event is full snapshot, then state changes.
+  rpc StreamLocalRuntimeState(StreamLocalRuntimeStateRequest) returns (stream StreamLocalRuntimeStateResponse);
 }
