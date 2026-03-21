@@ -39,14 +39,12 @@ message PitstopData {
 }
 
 // Ground surface classification for off-centerline lateral segments.
-// Values mirror BoinkGroundType from the engine.
 enum GroundType {
   GROUND_TYPE_ASPHALT = 0;
   GROUND_TYPE_GRASS = 1;
-  GROUND_TYPE_SAND = 2;
-  GROUND_TYPE_GRAVEL = 3;
-  GROUND_TYPE_WALL = 4;
-  GROUND_TYPE_KERB = 5;
+  GROUND_TYPE_GRAVEL = 2;
+  GROUND_TYPE_WALL = 3;
+  GROUND_TYPE_KERB = 4;
 }
 
 // Continuous lateral segment from centerline outward with one surface type.
