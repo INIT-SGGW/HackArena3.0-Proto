@@ -42,6 +42,19 @@ enum GearShift {
   GEAR_SHIFT_DOWNSHIFT = 3;
 }
 
+// Participant wrapper implementation used by the connected client SDK/runtime.
+enum ParticipantWrapperType {
+  PARTICIPANT_WRAPPER_TYPE_UNSPECIFIED = 0;
+  PARTICIPANT_WRAPPER_TYPE_PYTHON = 1;
+  PARTICIPANT_WRAPPER_TYPE_CSHARP = 2;
+  PARTICIPANT_WRAPPER_TYPE_JAVA = 3;
+  PARTICIPANT_WRAPPER_TYPE_CPP = 4;
+  PARTICIPANT_WRAPPER_TYPE_JS_TS = 5;
+  PARTICIPANT_WRAPPER_TYPE_RUST = 6;
+  PARTICIPANT_WRAPPER_TYPE_GO = 7;
+  PARTICIPANT_WRAPPER_TYPE_OTHER = 8;
+}
+
 // Development-only quick join request for entering an active sandbox session.
 message QuickJoinDevRequest {
   // Target active sandbox identifier to join.
@@ -55,23 +68,6 @@ message QuickJoinDevResponse {
   uint64 car_id = 1;
   // Map identifier of the joined sandbox session.
   string map_id = 2;
-
-}
-
-message SetControlsRequest {
-  uint64 client_seq = 1;
-  
-  // Normalized throttle input in range [0.0, 1.0].
-  float throttle = 2;
-
-  // Normalized brake input in range [0.0, 1.0].
-  float brake = 3;
-  
-  // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
-  float steering = 4;
-  // Requested gear shift by one step.
-  // UNSPECIFIED is treated as NONE.
-  GearShift gear_shift = 5;
 
 }
 
@@ -106,6 +102,70 @@ message SetControlsDevRequest {
   // UNSPECIFIED is treated as NONE.
   GearShift gear_shift = 6;
 
+}
+
+// First client message on participant stream.
+message ParticipantStreamInit {
+  // Participant wrapper implementation.
+  ParticipantWrapperType wrapper_type = 1;
+  // Wrapper version reported by the participant runtime.
+  string wrapper_version = 2;
+}
+
+// Controls command sent by participant over bidi stream.
+message ParticipantControlsInput {
+  // Client-side command sequence for ack correlation.
+  uint64 client_seq = 1;
+  // Normalized throttle input in range [0.0, 1.0].
+  float throttle = 2;
+  // Normalized brake input in range [0.0, 1.0].
+  float brake = 3;
+  // Normalized steering input in range [-1.0, 1.0], where -1 is full left and +1 is full right.
+  float steering = 4;
+  // Requested gear shift by one step.
+  // UNSPECIFIED is treated as NONE.
+  GearShift gear_shift = 5;
+}
+
+// Envelope for participant->server stream payloads.
+// Protocol rules:
+// - First message on stream must be init.
+// - init may be sent only once.
+message ParticipantClientMessage {
+  oneof payload {
+    ParticipantStreamInit init = 1;
+    ParticipantControlsInput controls = 2;
+  }
+}
+
+// Server acknowledgement for a controls command.
+message ParticipantControlsAck {
+  // Echoed client sequence from controls input.
+  uint64 client_seq = 1;
+  // Tick from which accepted controls are applied.
+  uint64 applies_from_tick = 2;
+  // Shift operation that was actually executed by drivetrain logic.
+  // Returns NONE when no shift was executed.
+  GearShift accepted_shift = 3;
+  // Accepted throttle after server-side clamping/validation.
+  float accepted_throttle = 4;
+  // Accepted brake after server-side clamping/validation.
+  float accepted_brake = 5;
+  // Accepted steering after server-side clamping/validation.
+  float accepted_steering = 6;
+}
+
+// Envelope for server->participant stream events.
+// After successful init, server sends settings and then emits ack/snapshot asynchronously.
+message ParticipantServerEvent {
+  // Monotonic per-stream server sequence number.
+  uint64 server_seq = 1;
+
+  oneof payload {
+    StreamSettings settings = 2;
+    ParticipantControlsAck ack = 3;
+    ParticipantSnapshot snapshot = 4;
+  }
 }
 
 message StreamSettings {
@@ -159,24 +219,15 @@ message FrontendSpectatorEvent {
 
 }
 
-message GetParticipantRaceRequest {
-  uint32 requested_hz = 1;
-
-}
-
-message ParticipantRaceEvent {
-  oneof payload {
-    StreamSettings settings = 1;
-    ParticipantRaceSnapshot snapshot = 2;
-  }
-
+// Participant gameplay stream:
+// init -> settings -> async ack/snapshot events.
+service RaceParticipantService {
+  rpc Stream(stream ParticipantClientMessage) returns (stream ParticipantServerEvent);
 }
 
 service RaceService {
   // Development-only helper for quickly joining an active sandbox by sandbox_id.
   rpc QuickJoinDev(QuickJoinDevRequest) returns (QuickJoinDevResponse);
-  rpc SetControls(SetControlsRequest) returns (SetControlsResponse);
   rpc SetControlsDev(SetControlsDevRequest) returns (SetControlsResponse);
   rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
-  rpc StreamParticipantRace(GetParticipantRaceRequest) returns (stream ParticipantRaceEvent);
 }

@@ -150,8 +150,8 @@ message ParticipantOpponentState {
 
 }
 
-// Participant race snapshot (self + opponents).
-message ParticipantRaceSnapshot {
+// Participant snapshot (self + opponents).
+message ParticipantSnapshot {
   uint64 tick = 1;
   // Milliseconds since Unix epoch (UTC).
   uint64 server_time_ms = 2;
