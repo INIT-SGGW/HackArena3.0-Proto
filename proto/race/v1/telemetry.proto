@@ -47,6 +47,32 @@ enum PitstopZoneFlag {
   PITSTOP_ZONE_FLAG_EXIT = 4;
 }
 
+// Installed tire compound for a vehicle.
+enum TireType {
+  TIRE_TYPE_UNSPECIFIED = 0;
+  TIRE_TYPE_HARD = 1;
+  TIRE_TYPE_SOFT = 2;
+  TIRE_TYPE_WET = 3;
+}
+
+// Per-wheel tire wear values normalized to range [0.0, 1.0].
+message TireWearPerWheel {
+  float front_left = 1;
+  float front_right = 2;
+  float rear_left = 3;
+  float rear_right = 4;
+
+}
+
+// Per-wheel tire temperature in degrees Celsius.
+message TireTemperaturePerWheel {
+  float front_left_celsius = 1;
+  float front_right_celsius = 2;
+  float rear_left_celsius = 3;
+  float rear_right_celsius = 4;
+
+}
+
 // Runtime ghost mode state for a single vehicle.
 // Pairwise collision rule:
 // can_collide_pair(A,B) = A.can_collide_now && B.can_collide_now.
@@ -92,6 +118,12 @@ message CarParticipantState {
   uint32 pitstop_zone_flags = 8;
   // Number of wheels currently inside pitstop zones (range 0..4).
   uint32 wheels_in_pitstop = 9;
+  // Installed tire compound.
+  TireType tire_type = 10;
+  // Tire wear per wheel, normalized to [0.0, 1.0].
+  TireWearPerWheel tire_wear = 11;
+  // Tire temperature per wheel in degrees Celsius.
+  TireTemperaturePerWheel tire_temperature_celsius = 12;
 
 }
 

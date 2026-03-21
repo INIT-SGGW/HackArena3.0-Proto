@@ -127,6 +127,18 @@ message ParticipantControlsInput {
   GearShift gear_shift = 5;
 }
 
+// One-shot command requesting teleport/resume back to track.
+message ParticipantBackToTrackCommand {
+  // Client-side command sequence for ack correlation.
+  uint64 client_seq = 1;
+}
+
+// One-shot command requesting teleport to pitstop area.
+message ParticipantToPitstopCommand {
+  // Client-side command sequence for ack correlation.
+  uint64 client_seq = 1;
+}
+
 // Envelope for participant->server stream payloads.
 // Protocol rules:
 // - First message on stream must be init.
@@ -135,6 +147,8 @@ message ParticipantClientMessage {
   oneof payload {
     ParticipantStreamInit init = 1;
     ParticipantControlsInput controls = 2;
+    ParticipantBackToTrackCommand back_to_track = 3;
+    ParticipantToPitstopCommand to_pitstop = 4;
   }
 }
 
@@ -155,6 +169,39 @@ message ParticipantControlsAck {
   float accepted_steering = 6;
 }
 
+// Participant command kind used by command acknowledgements.
+enum ParticipantCommandType {
+  PARTICIPANT_COMMAND_TYPE_UNSPECIFIED = 0;
+  PARTICIPANT_COMMAND_TYPE_BACK_TO_TRACK = 1;
+  PARTICIPANT_COMMAND_TYPE_TO_PITSTOP = 2;
+}
+
+// Result status for participant command processing.
+enum ParticipantCommandStatus {
+  PARTICIPANT_COMMAND_STATUS_UNSPECIFIED = 0;
+  PARTICIPANT_COMMAND_STATUS_ACCEPTED = 1;
+  PARTICIPANT_COMMAND_STATUS_REJECTED = 2;
+}
+
+// Reject reason for participant one-shot commands.
+enum ParticipantCommandRejectReason {
+  PARTICIPANT_COMMAND_REJECT_REASON_UNSPECIFIED = 0;
+  PARTICIPANT_COMMAND_REJECT_REASON_NOT_ALLOWED = 1;
+  PARTICIPANT_COMMAND_REJECT_REASON_RATE_LIMITED = 2;
+}
+
+// Server acknowledgement for one-shot participant commands.
+message ParticipantCommandAck {
+  // Echoed client sequence from command input.
+  uint64 client_seq = 1;
+  ParticipantCommandType command_type = 2;
+  ParticipantCommandStatus status = 3;
+  // Tick from which accepted command effects are applied.
+  uint64 applies_from_tick = 4;
+  // Must be set only when status is REJECTED.
+  ParticipantCommandRejectReason rejected_reason = 5;
+}
+
 // Envelope for server->participant stream events.
 // After successful init, server sends settings and then emits ack/snapshot asynchronously.
 message ParticipantServerEvent {
@@ -165,6 +212,7 @@ message ParticipantServerEvent {
     StreamSettings settings = 2;
     ParticipantControlsAck ack = 3;
     ParticipantSnapshot snapshot = 4;
+    ParticipantCommandAck command_ack = 5;
   }
 }
 
