@@ -55,6 +55,22 @@ enum ParticipantWrapperType {
   PARTICIPANT_WRAPPER_TYPE_OTHER = 8;
 }
 
+// Request for joining an active local sandbox session.
+message LocalSandboxJoinRequest {
+  // Target active local sandbox identifier to join.
+  string sandbox_id = 1;
+
+}
+
+// Join response with assigned participant vehicle data.
+message LocalSandboxJoinResponse {
+  // Assigned participant vehicle identifier.
+  uint64 car_id = 1;
+  // Map identifier of the joined sandbox session.
+  string map_id = 2;
+
+}
+
 // Development-only quick join request for entering an active sandbox session.
 message QuickJoinDevRequest {
   // Target active sandbox identifier to join.
@@ -271,9 +287,12 @@ message FrontendSpectatorEvent {
 // init -> settings -> async ack/snapshot events.
 service RaceParticipantService {
   rpc Stream(stream ParticipantClientMessage) returns (stream ParticipantServerEvent);
+  // Joins an active local sandbox.
+  rpc LocalSandboxJoin(LocalSandboxJoinRequest) returns (LocalSandboxJoinResponse);
 }
 
 service RaceService {
+
   // Development-only helper for quickly joining an active sandbox by sandbox_id.
   rpc QuickJoinDev(QuickJoinDevRequest) returns (QuickJoinDevResponse);
   rpc SetControlsDev(SetControlsDevRequest) returns (SetControlsResponse);
