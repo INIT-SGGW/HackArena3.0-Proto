@@ -149,10 +149,17 @@ message ParticipantBackToTrackCommand {
   uint64 client_seq = 1;
 }
 
-// One-shot command requesting teleport to pitstop area.
-message ParticipantToPitstopCommand {
+// One-shot command requesting emergency teleport to pitstop area.
+message ParticipantEmergencyPitstopCommand {
   // Client-side command sequence for ack correlation.
   uint64 client_seq = 1;
+}
+
+// One-shot command setting tire compound for the next pit stop.
+message ParticipantSetNextPitTireTypeCommand {
+  // Client-side command sequence for ack correlation.
+  uint64 client_seq = 1;
+  TireType next_tire_type = 2;
 }
 
 // Envelope for participant->server stream payloads.
@@ -164,7 +171,8 @@ message ParticipantClientMessage {
     ParticipantStreamInit init = 1;
     ParticipantControlsInput controls = 2;
     ParticipantBackToTrackCommand back_to_track = 3;
-    ParticipantToPitstopCommand to_pitstop = 4;
+    ParticipantEmergencyPitstopCommand emergency_pitstop = 4;
+    ParticipantSetNextPitTireTypeCommand set_next_pit_tire_type = 5;
   }
 }
 
@@ -189,7 +197,8 @@ message ParticipantControlsAck {
 enum ParticipantCommandType {
   PARTICIPANT_COMMAND_TYPE_UNSPECIFIED = 0;
   PARTICIPANT_COMMAND_TYPE_BACK_TO_TRACK = 1;
-  PARTICIPANT_COMMAND_TYPE_TO_PITSTOP = 2;
+  PARTICIPANT_COMMAND_TYPE_EMERGENCY_PITSTOP = 2;
+  PARTICIPANT_COMMAND_TYPE_SET_NEXT_PIT_TIRE_TYPE = 3;
 }
 
 // Result status for participant command processing.
@@ -204,6 +213,7 @@ enum ParticipantCommandRejectReason {
   PARTICIPANT_COMMAND_REJECT_REASON_UNSPECIFIED = 0;
   PARTICIPANT_COMMAND_REJECT_REASON_NOT_ALLOWED = 1;
   PARTICIPANT_COMMAND_REJECT_REASON_RATE_LIMITED = 2;
+  PARTICIPANT_COMMAND_REJECT_REASON_IN_PIT = 3;
 }
 
 // Server acknowledgement for one-shot participant commands.
@@ -215,6 +225,7 @@ message ParticipantCommandAck {
   // Tick from which accepted command effects are applied.
   uint64 applies_from_tick = 4;
   // Must be set only when status is REJECTED.
+  // For emergency_pitstop command, IN_PIT may be returned when vehicle is already in pit.
   ParticipantCommandRejectReason rejected_reason = 5;
 }
 
@@ -283,6 +294,65 @@ message FrontendSpectatorEvent {
 
 }
 
+// Frontend command request: force controlled bot back to track.
+// Target bot/runtime is derived by server from authenticated context.
+message BackToTrackRequest {
+}
+
+// Frontend response for BackToTrack.
+message BackToTrackResponse {
+  ParticipantCommandStatus status = 1;
+  // Tick from which accepted command effects are applied.
+  uint64 applies_from_tick = 2;
+  // Must be set only when status is REJECTED.
+  ParticipantCommandRejectReason rejected_reason = 3;
+}
+
+// Frontend command request: ask controlled bot to (or not to) go to pitstop by itself.
+// Target bot/runtime is derived by server from authenticated context.
+message RequestPitstopRequest {
+  // true: request self-driven pit entry, false: clear previous request.
+  bool request_pitstop = 1;
+}
+
+// Frontend response for RequestPitstop.
+message RequestPitstopResponse {
+  ParticipantCommandStatus status = 1;
+  // Tick from which accepted command effects are applied.
+  uint64 applies_from_tick = 2;
+  // Must be set only when status is REJECTED.
+  ParticipantCommandRejectReason rejected_reason = 3;
+}
+
+// Frontend command request: force controlled bot teleport to pitstop.
+// Target bot/runtime is derived by server from authenticated context.
+message EmergencyPitstopRequest {
+}
+
+// Frontend response for EmergencyPitstop.
+message EmergencyPitstopResponse {
+  ParticipantCommandStatus status = 1;
+  // Tick from which accepted command effects are applied.
+  uint64 applies_from_tick = 2;
+  // Must be set only when status is REJECTED.
+  ParticipantCommandRejectReason rejected_reason = 3;
+}
+
+// Frontend command request: set tire compound for the next pit stop.
+// Target bot/runtime is derived by server from authenticated context.
+message SetNextPitTireTypeRequest {
+  TireType next_tire_type = 1;
+}
+
+// Frontend response for SetNextPitTireType.
+message SetNextPitTireTypeResponse {
+  ParticipantCommandStatus status = 1;
+  // Tick from which accepted command effects are applied.
+  uint64 applies_from_tick = 2;
+  // Must be set only when status is REJECTED.
+  ParticipantCommandRejectReason rejected_reason = 3;
+}
+
 // Participant gameplay stream:
 // init -> settings -> async ack/snapshot events.
 service RaceParticipantService {
@@ -292,9 +362,16 @@ service RaceParticipantService {
 }
 
 service RaceService {
-
   // Development-only helper for quickly joining an active sandbox by sandbox_id.
   rpc QuickJoinDev(QuickJoinDevRequest) returns (QuickJoinDevResponse);
   rpc SetControlsDev(SetControlsDevRequest) returns (SetControlsResponse);
+  // Force controlled bot back to track.
+  rpc BackToTrack(BackToTrackRequest) returns (BackToTrackResponse);
+  // Ask controlled bot to go to pitstop (or clear the request).
+  rpc RequestPitstop(RequestPitstopRequest) returns (RequestPitstopResponse);
+  // Force controlled bot teleport to pitstop.
+  rpc EmergencyPitstop(EmergencyPitstopRequest) returns (EmergencyPitstopResponse);
+  // Set tire compound used by controlled bot on the next pit stop.
+  rpc SetNextPitTireType(SetNextPitTireTypeRequest) returns (SetNextPitTireTypeResponse);
   rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
 }

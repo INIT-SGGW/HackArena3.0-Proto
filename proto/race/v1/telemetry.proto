@@ -55,6 +55,14 @@ enum TireType {
   TIRE_TYPE_WET = 3;
 }
 
+// Source of pit entry.
+enum PitEntrySource {
+  PIT_ENTRY_SOURCE_UNSPECIFIED = 0;
+  PIT_ENTRY_SOURCE_BOT_DECISION = 1;
+  PIT_ENTRY_SOURCE_REQUESTED = 2;
+  PIT_ENTRY_SOURCE_EMERGENCY = 3;
+}
+
 // Per-wheel tire wear values normalized to range [0.0, 1.0].
 message TireWearPerWheel {
   float front_left = 1;
@@ -70,6 +78,42 @@ message TireTemperaturePerWheel {
   float front_right_celsius = 2;
   float rear_left_celsius = 3;
   float rear_right_celsius = 4;
+
+}
+
+// Current pit runtime state for one vehicle.
+message PitRuntimeState {
+  // True when pit request is currently active.
+  bool pit_request_active = 1;
+  // Emergency lock timeout remaining in milliseconds.
+  // When > 0, the vehicle cannot move.
+  uint32 emergency_lock_remaining_ms = 2;
+  // Timestamp (ms, Unix epoch UTC) of the last completed pit.
+  uint64 last_pit_time_ms = 3;
+  // Source of the last completed pit.
+  PitEntrySource last_pit_source = 4;
+  // Lap index at which last completed pit occurred.
+  uint32 last_pit_lap = 5;
+
+}
+
+// One pit history entry.
+message PitHistoryEntry {
+  // Timestamp (ms, Unix epoch UTC) when pit occurred.
+  uint64 pit_time_ms = 1;
+  // Lap index at pit event.
+  uint32 lap = 2;
+  PitEntrySource source = 3;
+  // Tire compound selected/applied in this pit.
+  TireType new_tire_type = 4;
+
+}
+
+// Pit history for one vehicle.
+message PitHistoryState {
+  // Ordered from newest to oldest.
+  // Number of entries is backend-defined.
+  repeated PitHistoryEntry entries = 1;
 
 }
 
@@ -124,6 +168,12 @@ message CarParticipantState {
   TireWearPerWheel tire_wear = 11;
   // Tire temperature per wheel in degrees Celsius.
   TireTemperaturePerWheel tire_temperature_celsius = 12;
+  // Current pit runtime state (request/emergency lock/last pit summary).
+  PitRuntimeState pit_runtime = 13;
+  // Pit history entries for this vehicle.
+  PitHistoryState pit_history = 14;
+  // Planned tire compound for the next pit stop.
+  TireType next_pit_tire_type = 15;
 
 }
 
