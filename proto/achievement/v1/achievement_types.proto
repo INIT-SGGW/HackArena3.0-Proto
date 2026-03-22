@@ -117,3 +117,28 @@ message NumericAchievementRepresentation {
 	// Progress percentage (0 - 100 inclusive).
 	int32 progress = 11;
 }
+
+message TeamTotal {
+  // Represents Team Id.
+  string team_id = 1;
+  // Represents total number of achieved achievements.
+  uint32 total = 2;
+}
+
+message AchievementDisplay {
+  string achievement_id = 1;
+  string name = 2;
+  string description = 3;
+  string image_path = 4;
+  string unit = 5;
+  AchievementAvailability availability = 6;
+  AchievementVisibility visibility = 7;
+}
+
+message NewAchievementDisplay {
+  string name = 1;
+  string description = 2;
+  string image_path = 3;
+  string unit = 4;
+  AchievementVisibility visibility = 5;
+}
