@@ -38,6 +38,24 @@ message PitstopData {
 
 }
 
+// Ground surface classification for off-centerline lateral segments.
+enum GroundType {
+  GROUND_TYPE_ASPHALT = 0;
+  GROUND_TYPE_GRASS = 1;
+  GROUND_TYPE_GRAVEL = 2;
+  GROUND_TYPE_WALL = 3;
+  GROUND_TYPE_KERB = 4;
+}
+
+// Continuous lateral segment from centerline outward with one surface type.
+message GroundWidth {
+  // Segment width in meters.
+  // Must be >= 0.
+  float width_m = 1;
+  GroundType ground_type = 2;
+
+}
+
 // Centerline sample with local frame and derived geometry.
 message CenterlineSample {
   // Distance along centerline in meters in [0, lap_length_m).
@@ -72,6 +90,18 @@ message CenterlineSample {
   // Crossfall/banking angle in radians around tangent.
   // Positive when the right side of the track is lower.
   float bank_rad = 10;
+  // Maximum lateral bound to track-left from centerline, measured to outer barrier.
+  // Must be >= left_width_m.
+  float max_left_width_m = 11;
+  // Maximum lateral bound to track-right from centerline, measured to outer barrier.
+  // Must be >= right_width_m.
+  float max_right_width_m = 12;
+  // Left-side ground segments ordered from centerline outward.
+  // Sum(width_m) should be <= max_left_width_m.
+  repeated GroundWidth left_grounds = 13;
+  // Right-side ground segments ordered from centerline outward.
+  // Sum(width_m) should be <= max_right_width_m.
+  repeated GroundWidth right_grounds = 14;
 
 }
 
