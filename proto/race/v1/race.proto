@@ -90,14 +90,10 @@ message QuickJoinDevResponse {
 message SetControlsResponse {
   uint64 client_seq = 1;
 
-  float accepted_throttle = 2;
-  float accepted_brake = 3;
-  float accepted_steering = 4;
-
-  uint64 applies_from_tick = 5;
+  uint64 applies_from_tick = 2;
   // Shift operation that was actually executed by drivetrain logic.
   // Returns NONE when no shift was executed.
-  GearShift accepted_shift = 6;
+  GearShift accepted_shift = 3;
 
 }
 
