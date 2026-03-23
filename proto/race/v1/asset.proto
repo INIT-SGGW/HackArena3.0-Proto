@@ -20,6 +20,13 @@ enum MapAssetKind {
   MAP_ASSET_KIND_MINIMAP_SVG = 3;
 }
 
+// GLB slots used by backend-to-backend asset sync.
+enum MapGlbKind {
+  MAP_GLB_KIND_UNSPECIFIED = 0;
+  MAP_GLB_KIND_MAIN = 1;
+  MAP_GLB_KIND_ANIMATION = 2;
+}
+
 // Metadata descriptor for a single map asset file.
 message MapAssetMeta {
   // Asset slot kind.
@@ -149,6 +156,42 @@ message GetMapAssetResponse {
 
 }
 
+// Internal-only request for backend-to-backend map sync metadata.
+message GetMapAssetSyncMetaRequest {
+  string map_id = 1;
+
+}
+
+// Internal-only response for backend-to-backend map sync metadata.
+message GetMapAssetSyncMetaResponse {
+  string map_id = 1;
+  bytes minimap_svg = 2;
+  bytes main_metadata_json = 3;
+  bytes minimap_metadata_json = 4;
+
+}
+
+// Internal-only request for backend-to-backend GLB chunk download.
+message StreamMapAssetGlbRequest {
+  // Target map identifier.
+  string map_id = 1;
+  // Requested GLB slot.
+  MapGlbKind kind = 2;
+  // Byte offset from start of file.
+  uint64 offset = 3;
+  // Maximum number of bytes to stream in this request.
+  uint64 limit = 4;
+
+}
+
+// Internal-only chunked GLB response for backend-to-backend map sync.
+message StreamMapAssetGlbResponse {
+  uint64 offset = 1;
+  bytes data = 2;
+  bool eof = 3;
+
+}
+
 // Query API for map asset discovery and chunked asset download.
 service AssetService {
   // Lists maps available for selection in UI/configuration.
@@ -157,4 +200,10 @@ service AssetService {
   rpc GetMapAssetBundleMeta(GetMapAssetBundleMetaRequest) returns (GetMapAssetBundleMetaResponse);
   // Streams raw bytes of a selected map asset in chunks.
   rpc GetMapAsset(GetMapAssetRequest) returns (stream GetMapAssetResponse);
+  // Internal-only: returns light/raw files used for backend-to-backend map sync.
+  // Not intended for frontend/public clients.
+  rpc GetMapAssetSyncMeta(GetMapAssetSyncMetaRequest) returns (GetMapAssetSyncMetaResponse);
+  // Internal-only: streams selected GLB bytes in chunks for backend-to-backend map sync.
+  // Not intended for frontend/public clients.
+  rpc StreamMapAssetGlb(StreamMapAssetGlbRequest) returns (stream StreamMapAssetGlbResponse);
 }
