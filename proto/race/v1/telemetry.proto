@@ -81,6 +81,16 @@ message TireTemperaturePerWheel {
 
 }
 
+// Per-wheel tire slip values.
+// Values are >= 0.0. Values > 1.0 indicate lost traction.
+message TireSlipPerWheel {
+  float front_left = 1;
+  float front_right = 2;
+  float rear_left = 3;
+  float rear_right = 4;
+
+}
+
 // Current pit runtime state for one vehicle.
 message PitRuntimeState {
   // True when pit request is currently active.
@@ -149,8 +159,7 @@ message CarParticipantState {
   float speed_mps = 2;
   float engine_rpm = 3;
   int32 gear = 4;
-  float throttle_applied = 5;
-  float brake_applied = 6;
+  reserved 5, 6;
   // Runtime ghost mode state for this vehicle.
   GhostModeState ghost_mode = 7;
   // Active pitstop zones encoded as PitstopZoneFlag bitmask.
@@ -174,6 +183,8 @@ message CarParticipantState {
   PitHistoryState pit_history = 14;
   // Planned tire compound for the next pit stop.
   TireType next_pit_tire_type = 15;
+  // Per-wheel tire slip values. > 1.0 indicates lost traction.
+  TireSlipPerWheel tire_slip = 16;
 
 }
 
@@ -193,6 +204,14 @@ message FrontendCarFullState {
   CarKinematics kinematics = 2;
   CarParticipantState telemetry = 3;
   CarRenderState render = 4;
+  // Current bot throttle input used for spectator UI.
+  float input_throttle = 5;
+  // Current bot brake input used for spectator UI.
+  float input_brake = 6;
+  // Current brake balancer value used for spectator UI.
+  float current_brake_balancer = 7;
+  // Current differential lock value used for spectator UI.
+  float current_differential_lock = 8;
 
 }
 

@@ -141,6 +141,12 @@ message ParticipantControlsInput {
   // Requested gear shift by one step.
   // UNSPECIFIED is treated as NONE.
   GearShift gear_shift = 5;
+  // Optional brake balance control in range [0.0, 1.0].
+  // When unset, server keeps the previous brake_balancer value.
+  optional float brake_balancer = 6;
+  // Optional differential lock control in range [0.0, 1.0].
+  // When unset, server keeps the previous differential_lock value.
+  optional float differential_lock = 7;
 }
 
 // One-shot command requesting teleport/resume back to track.
@@ -185,12 +191,6 @@ message ParticipantControlsAck {
   // Shift operation that was actually executed by drivetrain logic.
   // Returns NONE when no shift was executed.
   GearShift accepted_shift = 3;
-  // Accepted throttle after server-side clamping/validation.
-  float accepted_throttle = 4;
-  // Accepted brake after server-side clamping/validation.
-  float accepted_brake = 5;
-  // Accepted steering after server-side clamping/validation.
-  float accepted_steering = 6;
 }
 
 // Participant command kind used by command acknowledgements.
