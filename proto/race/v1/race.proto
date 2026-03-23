@@ -141,12 +141,10 @@ message ParticipantControlsInput {
   // Requested gear shift by one step.
   // UNSPECIFIED is treated as NONE.
   GearShift gear_shift = 5;
-  // Optional brake balance control in range [0.0, 1.0].
-  // When unset, server keeps the previous brake_balancer value.
-  optional float brake_balancer = 6;
-  // Optional differential lock control in range [0.0, 1.0].
-  // When unset, server keeps the previous differential_lock value.
-  optional float differential_lock = 7;
+  // Brake balance control in range [0.0, 1.0].
+  float brake_balancer = 6;
+  // Differential lock control in range [0.0, 1.0].
+  float differential_lock = 7;
 }
 
 // One-shot command requesting teleport/resume back to track.
