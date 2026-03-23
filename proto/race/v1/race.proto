@@ -223,8 +223,20 @@ message ParticipantCommandAck {
   ParticipantCommandRejectReason rejected_reason = 5;
 }
 
+// Global car dimensions for the current participant session.
+message CarDimensions {
+  float width_m = 1;
+  float depth_m = 2;
+}
+
+// One-time participant stream bootstrap payload.
+message ParticipantBootstrap {
+  CarDimensions car_dimensions = 1;
+}
+
 // Envelope for server->participant stream events.
-// After successful init, server sends settings and then emits ack/snapshot asynchronously.
+// After successful init, server sends settings, then one-time bootstrap,
+// then emits ack/snapshot/command_ack asynchronously.
 message ParticipantServerEvent {
   // Monotonic per-stream server sequence number.
   uint64 server_seq = 1;
@@ -234,6 +246,7 @@ message ParticipantServerEvent {
     ParticipantControlsAck ack = 3;
     ParticipantSnapshot snapshot = 4;
     ParticipantCommandAck command_ack = 5;
+    ParticipantBootstrap bootstrap = 6;
   }
 }
 
