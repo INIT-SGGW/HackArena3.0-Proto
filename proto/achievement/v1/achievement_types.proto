@@ -125,20 +125,37 @@ message TeamTotal {
   uint32 total = 2;
 }
 
+// Represents the displayable data of a single achievement.
+// This message is typically used to show achievement details in a user interface.
 message AchievementDisplay {
+  // The unique identifier of the achievement.
   string achievement_id = 1;
+  // The human-readable name of the achievement, e.g., "Master Explorer".
   string name = 2;
+  // A detailed description of what the achievement represents or how to earn it.
   string description = 3;
+  // The path or URL to the visual icon or badge for this achievement.
   string image_path = 4;
+  // An optional unit of measurement for progress towards the achievement,
   string unit = 5;
+  // The current availability status of the achievement (e.g. race, sandbox, both).
   AchievementAvailability availability = 6;
+  // The visibility status of the achievement, determining if it should be shown
+  // to users before it has been earned (e.g., public, secret).
   AchievementVisibility visibility = 7;
 }
 
+// Contains the data required to create or update the display properties of an achievement.
+// This message is used as input for administrative operations.
 message NewAchievementDisplay {
+  // The new or updated human-readable name for the achievement.
   string name = 1;
+  // The new or updated detailed description for the achievement.
   string description = 2;
+  // The new or updated path or URL to the visual icon.
   string image_path = 3;
+  // The new or updated unit of measurement for progress, if applicable.
   string unit = 4;
+  // The new or updated visibility status for the achievement.
   AchievementVisibility visibility = 5;
 }
