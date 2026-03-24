@@ -6,6 +6,8 @@ import "achievement/v1/achievement_types.proto";
 
 option csharp_namespace = "HA3.Proto.Achievement.V1";
 
+// Enum defining the reasons for the outcome of a GrantAchievement operation.
+// This is typically used to provide more context when an operation fails.
 enum GrantAchievementReason {
   GRANT_ACHIEVEMENT_REASON_UNSPECIFIED = 0;
   GRANT_ACHIEVEMENT_REASON_NONE = 1;
@@ -14,6 +16,8 @@ enum GrantAchievementReason {
   GRANT_ACHIEVEMENT_REASON_ALREADY_GRANTED = 4;
 }
 
+// Enum defining the reasons for the outcome of a RefuseAchievement operation.
+// This is typically used to provide more context when an operation fails.
 enum RefuseAchievementReason {
   REFUSE_ACHIEVEMENT_REASON_UNSPECIFIED = 0;
   REFUSE_ACHIEVEMENT_REASON_NONE = 1;
@@ -22,52 +26,86 @@ enum RefuseAchievementReason {
   REFUSE_ACHIEVEMENT_REASON_ALREADY_REFUSED = 4;
 }
 
+// Enum defining the reasons for the outcome of an UpdateAchievementDisplay operation.
+// This is typically used to provide more context when an operation fails.
 enum UpdateAchievementDisplayReason {
   UPDATE_ACHIEVEMENT_DISPLAY_REASON_UNSPECIFIED = 0;
   UPDATE_ACHIEVEMENT_DISPLAY_REASON_NONE = 1;
   UPDATE_ACHIEVEMENT_DISPLAY_REASON_NO_ACHIEVEMENT = 2;
 }
 
+// Request message for granting a specific achievement to a team.
 message GrantAchievementRequest {
+    // The unique identifier of the team to grant the achievement to.
     string team_id = 1;
+    // The unique identifier of the achievement to be granted.
     string achievement_id = 2;
 }
 
-message GrantAchievementResponse{
+// Response message for the GrantAchievement operation.
+message GrantAchievementResponse {
+    // A boolean flag indicating whether the achievement was granted successfully.
+    // `true` for success, `false` for failure.
     bool is_granted_successfully = 1;
+    // Provides additional context on the operation's outcome, especially in case of failure.
     GrantAchievementReason reason = 2;
 }
 
+// Request message for refusing (or revoking) a specific achievement for a team.
 message RefuseAchievementRequest {
+    // The unique identifier of the team for which the achievement should be refused.
     string team_id = 1;
+    // The unique identifier of the achievement to be refused.
     string achievement_id = 2;
 }
 
-message RefuseAchievementResponse{
+// Response message for the RefuseAchievement operation.
+message RefuseAchievementResponse {
+    // A boolean flag indicating whether the achievement was refused successfully.
+    // `true` for success, `false` for failure.
     bool is_refused_successfully = 1;
+    // Provides additional context on the operation's outcome, especially in case of failure.
     RefuseAchievementReason reason = 2;
 }
 
+// Request message to retrieve a list of all achievement displays.
 message GetAchievementDisplaysRequest {
 }
 
+// Response message containing the list of all achievement displays.
 message GetAchievementDisplaysResponse {
+    // A list of achievement display data.
+    // The `AchievementDisplay` message is defined in `achievement/v1/achievement_types.proto`.
     repeated AchievementDisplay displays = 1;
 }
 
-message UpdateAchievementDisplayRequest{
+message UpdateAchievementDisplayRequest {
+    // The unique identifier of the achievement whose display properties are to be updated.
     string achievement_id = 1;
+    // The new display data for the achievement.
+    // The `NewAchievementDisplay` message is defined in `achievement/v1/achievement_types.proto`.
     NewAchievementDisplay new_achievement_display = 2;
 }
 
+// Response message for the UpdateAchievementDisplay operation.
 message UpdateAchievementDisplayResponse {
+    // A boolean flag indicating whether the update was successful.
+    // `true` for success, `false` for failure.
     bool is_updated_successfully = 1;
+    // Provides additional context on the operation's outcome, especially in case of failure.
     UpdateAchievementDisplayReason reason = 2;
 }
 
+// Service definition for administrative actions related to achievements.
+// This service provides methods for managing achievements, such as granting,
+// refusing, and updating their display information.
 service AchievementServiceAdmin {
+    // Grants a specific achievement to a team.
     rpc GrantAchievement(GrantAchievementRequest) returns (GrantAchievementResponse);
+    // Refuses (or revokes) a specific achievement for a team.
     rpc RefuseAchievement(RefuseAchievementRequest) returns (RefuseAchievementResponse);
+    // Retrieves display information (e.g., name, description, icon) for all available achievements.
     rpc GetAchievementDisplays(GetAchievementDisplaysRequest) returns (GetAchievementDisplaysResponse);
+    // Updates the display information for a specific achievement.
     rpc UpdateAchievementDisplay(UpdateAchievementDisplayRequest) returns (UpdateAchievementDisplayResponse);
 }
