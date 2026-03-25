@@ -373,6 +373,19 @@ message SetNextPitTireTypeResponse {
   ParticipantCommandRejectReason rejected_reason = 3;
 }
 
+// Frontend request for logs of currently running official team bot.
+// Team/runtime target is derived by server from authenticated context.
+message GetOfficialTeamBotLogsRequest {
+}
+
+// Frontend response with latest log lines from currently running official team bot.
+message GetOfficialTeamBotLogsResponse {
+  // Returned log lines ordered from oldest to newest within this response window.
+  repeated string lines = 1;
+  // True when older lines were trimmed by server-side cap.
+  bool truncated = 2;
+}
+
 // Participant gameplay stream:
 // init -> settings -> async ack/snapshot events.
 service RaceParticipantService {
@@ -395,5 +408,8 @@ service RaceService {
   rpc EmergencyPitstop(EmergencyPitstopRequest) returns (EmergencyPitstopResponse);
   // Set tire compound used by controlled bot on the next pit stop.
   rpc SetNextPitTireType(SetNextPitTireTypeRequest) returns (SetNextPitTireTypeResponse);
+  // Returns latest logs for currently running official team bot (no pagination).
+  // Server returns up to 5000 lines.
+  rpc GetOfficialTeamBotLogs(GetOfficialTeamBotLogsRequest) returns (GetOfficialTeamBotLogsResponse);
   rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
 }
