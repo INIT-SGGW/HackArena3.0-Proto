@@ -52,7 +52,7 @@ message TokenStandardClaims {
   // Audience (aud), for example: "ha3-official" or "ha3-local".
   // JWT allows one or many audiences, so this field is repeated.
   repeated string aud = 2;
-  // Subject (sub), UUID whose meaning depends on token type:
+  // Subject (sub), identifier whose meaning depends on token type:
   // - team_bot: sub is team_id
   // - team_bot_dev: sub is user_id
   // - spectator: sub is user_id
@@ -72,7 +72,7 @@ message TokenStandardClaims {
 // Team-bot token claims.
 message TeamBotTokenClaims {
   TokenStandardClaims standard = 1;
-  // Team id claim (UUID). MUST be equal to standard.sub.
+  // Team id claim. MUST be equal to standard.sub.
   string team_id = 2;
 
 }
@@ -80,7 +80,7 @@ message TeamBotTokenClaims {
 // Team-bot development token claims.
 message TeamBotDevTokenClaims {
   TokenStandardClaims standard = 1;
-  // Team id claim (UUID). For this token type, standard.sub is user_id.
+  // Team id claim. For this token type, standard.sub is user_id.
   string team_id = 2;
   // Local runtime instance identifier.
   string instance_uuid = 3;
@@ -96,7 +96,7 @@ message SpectatorTokenClaims {
 // Team spectator token claims.
 message TeamSpectatorTokenClaims {
   TokenStandardClaims standard = 1;
-  // Team id claim (UUID). For this token type, standard.sub is user_id.
+  // Team id claim. For this token type, standard.sub is user_id.
   string team_id = 2;
 
 }
@@ -104,7 +104,7 @@ message TeamSpectatorTokenClaims {
 // Team spectator development token claims.
 message TeamDevSpectatorTokenClaims {
   TokenStandardClaims standard = 1;
-  // Team id claim (UUID). For this token type, standard.sub is user_id.
+  // Team id claim. For this token type, standard.sub is user_id.
   string team_id = 2;
 
 }
