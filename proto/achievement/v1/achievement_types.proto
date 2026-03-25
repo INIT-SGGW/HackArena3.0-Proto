@@ -3,6 +3,7 @@ syntax = "proto3";
 package achievement.v1;
 
 import "race/v1/common.proto";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "HA3.Proto.Achievement.V1";
 
@@ -92,6 +93,9 @@ message ConditionalAchievementRepresentation {
 	AchievementVisibility visibility = 6;
 	// Is Achevement achieved by team. (default: false)
 	bool is_achieved = 7;
+  // If achievement is granted, this field contains
+  // real time of its grant. It is zeroed otherwise
+  google.protobuf.Timestamp granted_at = 8;
 }
 
 message NumericAchievementRepresentation {
@@ -116,6 +120,9 @@ message NumericAchievementRepresentation {
 	string unit = 10;
 	// Progress percentage (0 - 100 inclusive).
 	int32 progress = 11;
+  // If achievement is granted, this field contains
+  // real time of its grant. It is zeroed otherwise
+  google.protobuf.Timestamp granted_at = 12;
 }
 
 message TeamTotal {

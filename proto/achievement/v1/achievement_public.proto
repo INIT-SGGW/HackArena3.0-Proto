@@ -57,6 +57,47 @@ message StreamAchievementGrantsResponse{
 	string achievement_name = 2;
 }
 
+enum GrantDevToolsFailReason {
+	GRANT_DEV_TOOLS_FAIL_UNSPECIFIED = 0;
+	GRANT_DEV_TOOLS_FAIL_NONE = 1;
+	GRANT_DEV_TOOLS_FAIL_ALREADY_GRANTED = 2;
+}
+
+enum GrantEasterEggFailReason {
+	GRANT_EASTER_EGG_FAIL_UNSPECIFIED = 0;
+	GRANT_EASTER_EGG_FAIL_NONE = 1;
+	GRANT_EASTER_EGG_FAIL_ALREADY_GRANTED = 2;
+	GRANT_EASTER_EGG_FAIL_WRONG_CODE = 3;
+}
+
+message GrantDevToolsAchievementRequest {
+	// Represents team id.
+	string team_id = 1;
+}
+
+message GrantDevToolsAchievementResponse {
+	// Represents grant status.
+	bool is_granted_successfully = 1;
+	// Fail reason. If is_granted_successfully is true
+	// it is set to NONE.
+	GrantDevToolsFailReason reason = 2;
+}
+
+message GrantEasterEggAchievementRequest {
+	// Represents team id.
+	string team_id = 1;
+	// Represents secret code.
+	string secret_code = 2;
+}
+
+message GrantEasterEggAchievementResponse {
+	// Represents grant status.
+	bool is_granted_successfully = 1;
+	// Fail reason. If is_granted_successfully is true
+	// it is set to NONE.
+	GrantEasterEggFailReason reason = 2;
+}
+
 // Api for achievement fetching.
 service AchievementService {
 	// Gets all achievements for specific team_id.
@@ -67,5 +108,8 @@ service AchievementService {
 	rpc GetAchievementTotals(GetAchievementTotalsRequest) returns (GetAchievementTotalsResponse);
 	// Global stream of achievement grant events.
 	rpc StreamAchievementGrants(StreamAchievementGrantsRequest) returns (stream StreamAchievementGrantsResponse);
-
+	// Grant secret devtools achievement
+	rpc GrantDevToolsAchievement(GrantDevToolsAchievementRequest) returns (GrantDevToolsAchievementResponse);
+	// Grant easter egg achievement
+	rpc GrantEasterEggAchievement(GrantEasterEggAchievementRequest) returns (GrantEasterEggAchievementResponse);
 }
