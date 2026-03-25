@@ -97,6 +97,19 @@ message SetControlsResponse {
 
 }
 
+// Request for preparing/joining active official race session.
+message PrepareOfficialJoinRequest {
+}
+
+// Response with assigned participant vehicle data for official race.
+message PrepareOfficialJoinResponse {
+  // Assigned participant vehicle identifier.
+  uint64 car_id = 1;
+  // Map identifier of the joined official race session.
+  string map_id = 2;
+
+}
+
 message SetControlsDevRequest {
   uint64 client_seq = 1;
 
@@ -364,6 +377,8 @@ message SetNextPitTireTypeResponse {
 // init -> settings -> async ack/snapshot events.
 service RaceParticipantService {
   rpc Stream(stream ParticipantClientMessage) returns (stream ParticipantServerEvent);
+  // Prepares participant for active official race and returns assigned car/map.
+  rpc PrepareOfficialJoin(PrepareOfficialJoinRequest) returns (PrepareOfficialJoinResponse);
   // Joins an active local sandbox.
   rpc LocalSandboxJoin(LocalSandboxJoinRequest) returns (LocalSandboxJoinResponse);
 }
