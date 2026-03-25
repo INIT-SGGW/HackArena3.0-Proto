@@ -22,6 +22,8 @@ message PublicSandboxRuntimeInfo {
   GhostModeSettings ghost_mode = 5;
   // Number of currently connected players in this sandbox.
   uint32 active_player_count = 6;
+  // True when caller's team bot is currently joined to this sandbox runtime.
+  bool team_bot_joined = 7;
 
 }
 
