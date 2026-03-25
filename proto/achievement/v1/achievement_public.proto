@@ -70,6 +70,12 @@ enum GrantEasterEggFailReason {
 	GRANT_EASTER_EGG_FAIL_WRONG_CODE = 3;
 }
 
+enum GrantLogsFailReason {
+	GRANT_LOGS_FAIL_UNSPECIFIED = 0;
+	GRANT_LOGS_FAIL_NONE = 1;
+	GRANT_LOGS_FAIL_ALREADY_GRANTED = 2;
+}
+
 message GrantDevToolsAchievementRequest {
 	// Represents team id.
 	string team_id = 1;
@@ -98,6 +104,19 @@ message GrantEasterEggAchievementResponse {
 	GrantEasterEggFailReason reason = 2;
 }
 
+message GrantLogsAchievementRequest {
+	// Represents team id.
+	string team_id = 1;
+}
+
+message GrantLogsAchievementResponse {
+	// Represents grant status.
+	bool is_granted_successfully = 1;
+	// Fail reason. If is_granted_successfully is true
+	// it is set to NONE.
+	GrantLogsFailReason reason = 2;
+}
+
 // Api for achievement fetching.
 service AchievementService {
 	// Gets all achievements for specific team_id.
@@ -112,4 +131,6 @@ service AchievementService {
 	rpc GrantDevToolsAchievement(GrantDevToolsAchievementRequest) returns (GrantDevToolsAchievementResponse);
 	// Grant easter egg achievement
 	rpc GrantEasterEggAchievement(GrantEasterEggAchievementRequest) returns (GrantEasterEggAchievementResponse);
+	// Grant logs achievment
+	rpc GrantLogsAchievement(GrantLogsAchievementRequest) returns (GrantLogsAchievementResponse);
 }
