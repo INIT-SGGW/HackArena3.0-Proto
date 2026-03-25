@@ -107,6 +107,17 @@ message PitRuntimeState {
 
 }
 
+// Remaining cooldown time for selected one-shot participant commands.
+// Values > 0 mean active cooldown, 0 means command is ready.
+// This snapshot is the canonical current cooldown state for UI.
+message CommandCooldownState {
+  // Remaining cooldown for back-to-track command in milliseconds.
+  uint32 back_to_track_remaining_ms = 1;
+  // Remaining cooldown for emergency pitstop command in milliseconds.
+  uint32 emergency_pitstop_remaining_ms = 2;
+
+}
+
 // One pit history entry.
 message PitHistoryEntry {
   // Timestamp (ms, Unix epoch UTC) when pit occurred.
@@ -185,6 +196,8 @@ message CarParticipantState {
   TireType next_pit_tire_type = 15;
   // Per-wheel tire slip values. > 1.0 indicates lost traction.
   TireSlipPerWheel tire_slip = 16;
+  // Remaining cooldowns for one-shot back_to_track / emergency_pitstop commands.
+  CommandCooldownState command_cooldowns = 17;
 
 }
 

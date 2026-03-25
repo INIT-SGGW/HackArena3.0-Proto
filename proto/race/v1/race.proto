@@ -157,12 +157,14 @@ message ParticipantControlsInput {
 }
 
 // One-shot command requesting teleport/resume back to track.
+// Shares one cooldown bucket with frontend unary BackToTrack.
 message ParticipantBackToTrackCommand {
   // Client-side command sequence for ack correlation.
   uint64 client_seq = 1;
 }
 
 // One-shot command requesting emergency teleport to pitstop area.
+// Shares one cooldown bucket with frontend unary EmergencyPitstop.
 message ParticipantEmergencyPitstopCommand {
   // Client-side command sequence for ack correlation.
   uint64 client_seq = 1;
@@ -221,6 +223,9 @@ enum ParticipantCommandRejectReason {
   PARTICIPANT_COMMAND_REJECT_REASON_NOT_ALLOWED = 1;
   PARTICIPANT_COMMAND_REJECT_REASON_RATE_LIMITED = 2;
   PARTICIPANT_COMMAND_REJECT_REASON_IN_PIT = 3;
+  // Command-specific cooldown is currently active.
+  // Cooldown check has precedence over other command validation reasons.
+  PARTICIPANT_COMMAND_REJECT_REASON_COOLDOWN_ACTIVE = 4;
 }
 
 // Server acknowledgement for one-shot participant commands.
@@ -234,6 +239,10 @@ message ParticipantCommandAck {
   // Must be set only when status is REJECTED.
   // For emergency_pitstop command, IN_PIT may be returned when vehicle is already in pit.
   ParticipantCommandRejectReason rejected_reason = 5;
+  // Remaining cooldown in milliseconds for this command.
+  // Must be > 0 only when status is REJECTED and rejected_reason is COOLDOWN_ACTIVE.
+  // Must be 0 for accepted commands and non-cooldown rejections.
+  uint32 cooldown_remaining_ms = 6;
 }
 
 // Global car dimensions for the current participant session.
@@ -316,6 +325,7 @@ message FrontendSpectatorEvent {
 
 // Frontend command request: force controlled bot back to track.
 // Target bot/runtime is derived by server from authenticated context.
+// Shares one cooldown bucket with participant back_to_track command.
 message BackToTrackRequest {
 }
 
@@ -326,6 +336,10 @@ message BackToTrackResponse {
   uint64 applies_from_tick = 2;
   // Must be set only when status is REJECTED.
   ParticipantCommandRejectReason rejected_reason = 3;
+  // Remaining cooldown in milliseconds for back-to-track command.
+  // Must be > 0 only when status is REJECTED and rejected_reason is COOLDOWN_ACTIVE.
+  // Must be 0 for accepted calls and non-cooldown rejections.
+  uint32 cooldown_remaining_ms = 4;
 }
 
 // Frontend command request: ask controlled bot to (or not to) go to pitstop by itself.
@@ -346,6 +360,7 @@ message RequestPitstopResponse {
 
 // Frontend command request: force controlled bot teleport to pitstop.
 // Target bot/runtime is derived by server from authenticated context.
+// Shares one cooldown bucket with participant emergency_pitstop command.
 message EmergencyPitstopRequest {
 }
 
@@ -356,6 +371,10 @@ message EmergencyPitstopResponse {
   uint64 applies_from_tick = 2;
   // Must be set only when status is REJECTED.
   ParticipantCommandRejectReason rejected_reason = 3;
+  // Remaining cooldown in milliseconds for emergency pitstop command.
+  // Must be > 0 only when status is REJECTED and rejected_reason is COOLDOWN_ACTIVE.
+  // Must be 0 for accepted calls and non-cooldown rejections.
+  uint32 cooldown_remaining_ms = 4;
 }
 
 // Frontend command request: set tire compound for the next pit stop.
