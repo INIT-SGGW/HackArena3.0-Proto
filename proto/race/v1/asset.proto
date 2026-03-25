@@ -120,6 +120,16 @@ message ListMapsResponse {
 
 }
 
+// Admin-only request for full map catalog listing.
+message ListAllMapsRequest {
+}
+
+// Admin-only response with all maps available in backend catalog.
+message ListAllMapsResponse {
+  repeated MapCatalogEntry maps = 1;
+
+}
+
 // Request for map asset bundle metadata.
 message GetMapAssetBundleMetaRequest {
   string map_id = 1;
@@ -196,6 +206,8 @@ message StreamMapAssetGlbResponse {
 service AssetService {
   // Lists maps available for selection in UI/configuration.
   rpc ListMaps(ListMapsRequest) returns (ListMapsResponse);
+  // Admin-only: lists all maps available in backend catalog.
+  rpc ListAllMaps(ListAllMapsRequest) returns (ListAllMapsResponse);
   // Returns typed bundle metadata and file descriptors for a selected map.
   rpc GetMapAssetBundleMeta(GetMapAssetBundleMetaRequest) returns (GetMapAssetBundleMetaResponse);
   // Streams raw bytes of a selected map asset in chunks.
