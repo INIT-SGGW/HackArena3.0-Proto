@@ -386,6 +386,33 @@ message GetOfficialTeamBotLogsResponse {
   bool truncated = 2;
 }
 
+// Frontend stream request for logs of currently running official team bot.
+// Team/runtime target is derived by server from authenticated context.
+message StreamOfficialTeamBotLogsRequest {
+}
+
+// Initial log snapshot for stream subscribers.
+message OfficialTeamBotLogsSnapshot {
+  // Returned log lines ordered from oldest to newest within this snapshot window.
+  repeated string lines = 1;
+  // True when older lines were trimmed by server-side cap.
+  bool truncated = 2;
+}
+
+// Single appended log line event for stream subscribers.
+message OfficialTeamBotLogLine {
+  string line = 1;
+}
+
+// Stream event envelope for official team bot logs.
+// First event must be snapshot, then server emits line events for newly appended logs.
+message StreamOfficialTeamBotLogsResponse {
+  oneof payload {
+    OfficialTeamBotLogsSnapshot snapshot = 1;
+    OfficialTeamBotLogLine line = 2;
+  }
+}
+
 // Participant gameplay stream:
 // init -> settings -> async ack/snapshot events.
 service RaceParticipantService {
@@ -411,5 +438,7 @@ service RaceService {
   // Returns latest logs for currently running official team bot (no pagination).
   // Server returns up to 5000 lines.
   rpc GetOfficialTeamBotLogs(GetOfficialTeamBotLogsRequest) returns (GetOfficialTeamBotLogsResponse);
+  // Streams official team bot logs: first snapshot (up to 5000 lines), then new lines.
+  rpc StreamOfficialTeamBotLogs(StreamOfficialTeamBotLogsRequest) returns (stream StreamOfficialTeamBotLogsResponse);
   rpc StreamFrontendSpectator(GetFrontendSpectatorRequest) returns (stream FrontendSpectatorEvent);
 }
