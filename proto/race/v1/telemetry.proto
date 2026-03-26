@@ -125,8 +125,22 @@ message PitHistoryEntry {
   // Lap index at pit event.
   uint32 lap = 2;
   PitEntrySource source = 3;
-  // Tire compound selected/applied in this pit.
-  TireType new_tire_type = 4;
+  // Tire compound after pit was completed.
+  TireType tire_type_after = 4;
+  // Tire compound before pit started.
+  // If no tire compound change happened, this equals tire_type_after.
+  TireType tire_type_before = 5;
+  // Tire wear values captured immediately before pit repair/service.
+  TireWearPerWheel tire_wear_before_repair = 6;
+  // Tire temperatures captured immediately before pit service.
+  TireTemperaturePerWheel tire_temperature_before_celsius = 7;
+  // Tire temperatures captured immediately after pit service.
+  TireTemperaturePerWheel tire_temperature_after_celsius = 8;
+  // Active bot slot before pit, 1-based.
+  // If slot did not change, this equals bot_slot_after.
+  uint32 bot_slot_before = 9;
+  // Active bot slot after pit, 1-based.
+  uint32 bot_slot_after = 10;
 
 }
 
