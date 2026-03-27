@@ -170,7 +170,9 @@ message ParticipantEmergencyPitstopCommand {
   uint64 client_seq = 1;
 }
 
-// One-shot command setting tire compound for the next pit stop.
+// One-shot command setting bot tire preference for the next pit stop.
+// This setting is independent from frontend override.
+// When frontend override is set, frontend value has priority.
 message ParticipantSetNextPitTireTypeCommand {
   // Client-side command sequence for ack correlation.
   uint64 client_seq = 1;
@@ -380,6 +382,9 @@ message EmergencyPitstopResponse {
 // Frontend command request: set tire compound for the next pit stop.
 // Target bot/runtime is derived by server from authenticated context.
 message SetNextPitTireTypeRequest {
+  // Frontend override for next pit tire.
+  // UNSPECIFIED enables auto mode (no frontend override), so bot selection is used.
+  // HARD/SOFT/WET enforce frontend-selected tire type.
   TireType next_tire_type = 1;
 }
 

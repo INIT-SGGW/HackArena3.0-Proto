@@ -239,6 +239,12 @@ message FrontendCarFullState {
   float current_brake_balancer = 7;
   // Current differential lock value used for spectator UI.
   float current_differential_lock = 8;
+  // Frontend-selected tire override for next pit stop.
+  // UNSPECIFIED means auto mode (no frontend override).
+  // Effective pit tire is:
+  // - this override when value is HARD/SOFT/WET,
+  // - otherwise telemetry.next_pit_tire_type (bot selection).
+  TireType frontend_next_pit_tire_override = 9;
 
 }
 
