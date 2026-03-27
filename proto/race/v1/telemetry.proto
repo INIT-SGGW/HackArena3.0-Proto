@@ -264,6 +264,16 @@ message FrontendSpectatorSnapshot {
   repeated FrontendCarFullState cars = 3;
   // Optional debug-only telemetry block.
   FrontendSpectatorDebugInfo debug = 4;
+  // Elapsed runtime time in seconds.
+  // Set for local sandbox and official sandbox targets.
+  optional float runtime_elapsed_sec = 5;
+  // Current completed lap count of the official race leader.
+  // Set only for official race target.
+  optional uint32 official_race_leader_completed_laps = 6;
+  // Remaining runtime time in seconds.
+  // Set for official race target and optionally for official sandbox target
+  // when planned sandbox shutdown time is defined.
+  optional float runtime_remaining_sec = 7;
 
 }
 
