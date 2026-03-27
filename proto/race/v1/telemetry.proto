@@ -245,6 +245,16 @@ message FrontendCarFullState {
   // - this override when value is HARD/SOFT/WET,
   // - otherwise telemetry.next_pit_tire_type (bot selection).
   TireType frontend_next_pit_tire_override = 9;
+  // Elapsed time of currently active lap in milliseconds.
+  // Set for official race/official sandbox only when lap is active.
+  // Unset before first lap starts and for local sandbox target.
+  optional uint32 current_lap_elapsed_ms = 10;
+  // Time of the most recently completed lap in milliseconds.
+  // Unset until first completed lap.
+  optional uint32 last_lap_time_ms = 11;
+  // Best completed lap time in milliseconds within current runtime session.
+  // Unset until first completed lap.
+  optional uint32 best_lap_time_ms = 12;
 
 }
 
