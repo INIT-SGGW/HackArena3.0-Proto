@@ -166,3 +166,25 @@ message NewAchievementDisplay {
   // The new or updated visibility status for the achievement.
   AchievementVisibility visibility = 5;
 }
+
+message AchievementGrant {
+  // Represents team id
+  string team_id = 1;
+  // Represents achievement id
+  string achievement_id = 2;
+  // Real time of achievement grant
+  google.protobuf.Timestamp granted_at = 3;
+}
+
+message TeamStat {
+  // Represents team id
+  string team_id = 1;
+  // Represents total distance
+  int64 total_distance = 2;
+  // Represents total time
+  int64 total_time = 3;
+  // Represents total overtakes
+  int64 total_overtakes = 4;
+  // Represents total laps
+  int64 total_laps = 5;
+}

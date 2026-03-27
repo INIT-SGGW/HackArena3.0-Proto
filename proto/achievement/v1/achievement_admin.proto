@@ -96,6 +96,20 @@ message UpdateAchievementDisplayResponse {
     UpdateAchievementDisplayReason reason = 2;
 }
 
+message GetAchievementGrantsRequest {
+}
+
+message GetAchievementGrantsResponse {
+    repeated AchievementGrant grants = 1;
+}
+
+message GetTeamStatsRequest {
+}
+
+message GetTeamStatsResponse {
+    repeated TeamStat team_stats = 1;
+}
+
 // Service definition for administrative actions related to achievements.
 // This service provides methods for managing achievements, such as granting,
 // refusing, and updating their display information.
@@ -108,4 +122,8 @@ service AchievementServiceAdmin {
     rpc GetAchievementDisplays(GetAchievementDisplaysRequest) returns (GetAchievementDisplaysResponse);
     // Updates the display information for a specific achievement.
     rpc UpdateAchievementDisplay(UpdateAchievementDisplayRequest) returns (UpdateAchievementDisplayResponse);
+    // Return all achievement grants
+    rpc GetAchievementGrants(GetAchievementGrantsRequest) returns (GetAchievementGrantsResponse);
+    // Return all team stats
+    rpc GetTeamStats(GetTeamStatsRequest) returns (GetTeamStatsResponse);
 }
