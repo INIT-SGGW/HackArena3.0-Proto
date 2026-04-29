@@ -74,12 +74,20 @@ message WeatherSandboxTarget {
 message WeatherOfficialRaceTarget {
 }
 
+// Weather target for active standalone local race session.
+message WeatherLocalRaceTarget {
+  // Target active local race identifier.
+  string race_id = 1;
+
+}
+
 // Explicit weather source target.
 // Exactly one target must be set.
 message WeatherTarget {
   oneof target {
     WeatherOfficialRaceTarget official_race = 1;
     WeatherSandboxTarget sandbox = 2;
+    WeatherLocalRaceTarget local_race = 3;
   }
 
 }

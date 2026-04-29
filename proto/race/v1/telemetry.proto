@@ -246,7 +246,7 @@ message FrontendCarFullState {
   // - otherwise telemetry.next_pit_tire_type (bot selection).
   TireType frontend_next_pit_tire_override = 9;
   // Elapsed time of currently active lap in milliseconds.
-  // Set for official race/official sandbox only when lap is active.
+  // Set for official race, local race, and official sandbox only when lap is active.
   // Unset before first lap starts and for local sandbox target.
   optional uint32 current_lap_elapsed_ms = 10;
   // Time of the most recently completed lap in milliseconds.
@@ -275,15 +275,19 @@ message FrontendSpectatorSnapshot {
   // Optional debug-only telemetry block.
   FrontendSpectatorDebugInfo debug = 4;
   // Elapsed runtime time in seconds.
-  // Set for local sandbox and official sandbox targets.
+  // Set for local sandbox, official sandbox, and local race targets.
   optional float runtime_elapsed_sec = 5;
-  // Current completed lap count of the official race leader.
-  // Set only for official race target.
-  optional uint32 official_race_leader_completed_laps = 6;
+  // Current completed lap count of official race leader.
+  // Deprecated: use race_leader_completed_laps instead.
+  // During migration, official race snapshots should set both fields to the same value.
+  optional uint32 official_race_leader_completed_laps = 6 [deprecated = true];
   // Remaining runtime time in seconds.
-  // Set for official race target and optionally for official sandbox target
+  // Set for official race and local race targets, and optionally for official sandbox target
   // when planned sandbox shutdown time is defined.
   optional float runtime_remaining_sec = 7;
+  // Current completed lap count of active race leader.
+  // Set for official race and local race targets.
+  optional uint32 race_leader_completed_laps = 8;
 
 }
 

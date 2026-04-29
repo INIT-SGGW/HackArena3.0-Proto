@@ -71,6 +71,28 @@ message LocalSandboxJoinResponse {
 
 }
 
+// Request for joining an active standalone local race.
+message LocalRaceJoinRequest {
+  // Target active local race identifier.
+  string race_id = 1;
+  // Display name shown in local race UI/table.
+  string display_name = 2;
+
+}
+
+// Join response with assigned local race participant vehicle data.
+message LocalRaceJoinResponse {
+  // Assigned participant vehicle identifier.
+  uint64 car_id = 1;
+  // Joined local race identifier.
+  string race_id = 2;
+  // Map identifier of the joined local race session.
+  string map_id = 3;
+  // 1-based participant index in local race join order.
+  uint32 participant_index = 4;
+
+}
+
 // Development-only quick join request for entering an active sandbox session.
 message QuickJoinDevRequest {
   // Target active sandbox identifier to join.
@@ -297,6 +319,13 @@ message SpectatorSandboxTarget {
 message SpectatorOfficialRaceTarget {
 }
 
+// Spectator target for streaming an active standalone local race.
+message SpectatorLocalRaceTarget {
+  // Target active local race identifier.
+  string race_id = 1;
+
+}
+
 // Request for frontend spectator stream configuration.
 message GetFrontendSpectatorRequest {
   // Requested stream frequency for spectator updates.
@@ -310,6 +339,8 @@ message GetFrontendSpectatorRequest {
     SpectatorSandboxTarget sandbox = 3;
     // Stream the active official race.
     SpectatorOfficialRaceTarget official_race = 4;
+    // Stream the selected active standalone local race.
+    SpectatorLocalRaceTarget local_race = 6;
   }
   // Requests optional debug telemetry in spectator snapshots.
   // Server may ignore this flag when caller is not authorized.
@@ -445,6 +476,8 @@ service RaceParticipantService {
   rpc PrepareOfficialJoin(PrepareOfficialJoinRequest) returns (PrepareOfficialJoinResponse);
   // Joins an active local sandbox.
   rpc LocalSandboxJoin(LocalSandboxJoinRequest) returns (LocalSandboxJoinResponse);
+  // Joins an active standalone local race.
+  rpc LocalRaceJoin(LocalRaceJoinRequest) returns (LocalRaceJoinResponse);
 }
 
 service RaceService {

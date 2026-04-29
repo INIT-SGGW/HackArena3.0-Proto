@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package race.v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "race/v1/runtime_local_common.proto";
+import "race/v1/runtime_settings.proto";
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// Lifecycle phase of a standalone local race.
+enum LocalRacePhase {
+  LOCAL_RACE_PHASE_UNSPECIFIED = 0;
+  LOCAL_RACE_PHASE_STAGING = 1;
+  LOCAL_RACE_PHASE_COUNTDOWN = 2;
+  LOCAL_RACE_PHASE_RUNNING = 3;
+  LOCAL_RACE_PHASE_FINISHED = 4;
+  LOCAL_RACE_PHASE_ABORTED = 5;
+}
+
+// Local race configuration payload.
+message LocalRaceConfigInput {
+  // Human-readable race name shown in frontend.
+  string race_name = 1;
+  // Track/map identifier used by race simulation.
+  string map_id = 2;
+  // Race duration in seconds, counted from running phase start.
+  uint32 race_duration_sec = 3;
+  LocalTimeOfDaySettings time_of_day = 4;
+  GhostModeSettings ghost_mode = 5;
+  LocalWeatherSettings weather = 6;
+  // Maximum number of joined participants.
+  uint32 max_participants = 7;
+
+}
+
+// Active local race runtime details.
+message LocalRaceRuntimeInfo {
+  // Active local race identifier.
+  string race_id = 1;
+  // Active local race display name.
+  string race_name = 2;
+  // Active local race map identifier.
+  string map_id = 3;
+  // Race duration in seconds, counted from running phase start.
+  uint32 race_duration_sec = 4;
+  LocalTimeOfDaySettings time_of_day = 5;
+  // Currently resolved in-session time-of-day preset.
+  RuntimeTimeOfDayPreset active_time_of_day_preset = 6;
+  GhostModeSettings ghost_mode = 7;
+  LocalWeatherSettings weather = 8;
+  LocalRacePhase phase = 9;
+  // UTC timestamp when local race runtime was created.
+  google.protobuf.Timestamp created_at_utc = 10;
+  // UTC timestamp when countdown ends and race enters running phase.
+  google.protobuf.Timestamp countdown_end_at_utc = 11;
+  // UTC timestamp when race entered running phase.
+  google.protobuf.Timestamp running_started_at_utc = 12;
+  // Planned UTC timestamp when running phase should end.
+  google.protobuf.Timestamp planned_end_at_utc = 13;
+  // Number of currently joined participants.
+  uint32 joined_participant_count = 14;
+  // Maximum number of joined participants.
+  uint32 max_participants = 15;
+
+}
+
+// Request to create a local race in staging phase.
+message CreateLocalRaceRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  LocalRaceConfigInput config = 2;
+
+}
+
+// Response with created local race runtime.
+message CreateLocalRaceResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  LocalRaceRuntimeInfo race = 2;
+
+}
+
+// Request to start countdown for a staged local race.
+message StartLocalRaceCountdownRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  string race_id = 2;
+  // Countdown duration in seconds. 0 starts the race immediately.
+  uint32 countdown_seconds = 3;
+
+}
+
+// Response with countdown start result.
+message StartLocalRaceCountdownResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  string race_id = 2;
+  google.protobuf.Timestamp countdown_end_at_utc = 3;
+
+}
+
+// Request to abort an active local race.
+message AbortLocalRaceRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  string race_id = 2;
+
+}
+
+// Response confirming local race abort.
+message AbortLocalRaceResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  string race_id = 2;
+
+}
+
+// Request to clear a finished or aborted local race runtime.
+message CloseLocalRaceRequest {
+  // Must match current runtime revision, otherwise request is rejected.
+  uint64 expected_revision = 1;
+  string race_id = 2;
+
+}
+
+// Response confirming local race close.
+message CloseLocalRaceResponse {
+  // Monotonic runtime revision used for optimistic concurrency.
+  uint64 revision = 1;
+  string race_id = 2;
+
+}
+
+// Admin API for standalone local race lifecycle.
+service LocalRaceAdminService {
+  // Creates the only active local race in staging phase.
+  rpc CreateLocalRace(CreateLocalRaceRequest) returns (CreateLocalRaceResponse);
+  // Starts countdown for staged local race. countdown_seconds=0 starts immediately.
+  rpc StartLocalRaceCountdown(StartLocalRaceCountdownRequest) returns (StartLocalRaceCountdownResponse);
+  // Aborts staged, countdown, or running local race.
+  rpc AbortLocalRace(AbortLocalRaceRequest) returns (AbortLocalRaceResponse);
+  // Clears finished or aborted local race runtime.
+  rpc CloseLocalRace(CloseLocalRaceRequest) returns (CloseLocalRaceResponse);
+}

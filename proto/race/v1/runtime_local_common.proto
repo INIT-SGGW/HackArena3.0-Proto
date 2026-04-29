@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package race.v1;
+
+import "race/v1/runtime_settings.proto";
+import "weather/v1/weather.proto";
+
+option csharp_namespace = "HA3.Proto.Race.V1";
+
+// Local runtime time-of-day resolution mode.
+enum LocalTimeOfDayMode {
+  LOCAL_TIME_OF_DAY_MODE_UNSPECIFIED = 0;
+  // Use fixed_preset from LocalTimeOfDaySettings.
+  LOCAL_TIME_OF_DAY_MODE_FIXED_PRESET = 1;
+  // Resolve preset from backend local system time.
+  LOCAL_TIME_OF_DAY_MODE_AUTO_BY_LOCAL_TIME = 2;
+}
+
+// Local runtime time-of-day settings.
+message LocalTimeOfDaySettings {
+  LocalTimeOfDayMode mode = 1;
+  // Used when mode is LOCAL_TIME_OF_DAY_MODE_FIXED_PRESET.
+  RuntimeTimeOfDayPreset fixed_preset = 2;
+
+}
+
+// Local runtime weather settings.
+message LocalWeatherSettings {
+  weather.v1.WeatherType weather_type = 1;
+  // Air temperature in Celsius degrees.
+  int32 temperature_c = 2;
+
+}
